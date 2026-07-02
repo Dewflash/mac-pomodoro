@@ -3,7 +3,7 @@ import WebKit
 
 private enum AppConfig {
     static let appName = "Pomodewro"
-    static let popoverScale: CGFloat = 0.70
+    static let popoverScale: CGFloat = 1.0
     static let basePopoverSize = NSSize(width: 800, height: 490)
 
     static var popoverSize: NSSize {

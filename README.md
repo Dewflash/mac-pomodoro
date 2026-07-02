@@ -1,6 +1,6 @@
 # Pomodewro
 
-A local Pomodoro focus timer designed for a compact Mac menu bar popover.
+A local Pomodoro focus timer designed for a wide Mac menu bar popover.
 
 Open `index.html` in a browser to preview it, or build the native menu bar app with:
 
