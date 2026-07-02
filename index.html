@@ -8,7 +8,12 @@
     :root {
       color-scheme: dark;
       --accent: #4ee8dc;
+      --accent-rgb: 78, 232, 220;
       --accent-strong: #20c7bd;
+      --accent-strong-rgb: 32, 199, 189;
+      --accent-light: #6affe7;
+      --accent-light-rgb: 106, 255, 231;
+      --accent-leaf: #a7f3d0;
       --text: rgba(255, 255, 255, 0.96);
       --muted: rgba(255, 255, 255, 0.62);
       --line: rgba(255, 255, 255, 0.16);
@@ -34,7 +39,7 @@
       place-items: center;
       padding: 16px;
       background:
-        radial-gradient(circle at 12% 12%, rgba(78, 232, 220, 0.18), transparent 30%),
+        radial-gradient(circle at 12% 12%, rgba(var(--accent-rgb), 0.18), transparent 30%),
         radial-gradient(circle at 84% 20%, rgba(129, 140, 248, 0.16), transparent 28%),
         #050711;
       color: var(--text);
@@ -93,10 +98,29 @@
       accent-color: var(--accent);
     }
 
+    input[type="color"] {
+      width: 42px;
+      height: 34px;
+      border: 1px solid rgba(var(--accent-rgb), 0.28);
+      border-radius: 9px;
+      padding: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+      border: 0;
+      border-radius: 6px;
+    }
+
     select:focus,
     input:focus,
     button:focus-visible {
-      outline: 2px solid rgba(78, 232, 220, 0.72);
+      outline: 2px solid rgba(var(--accent-rgb), 0.72);
       outline-offset: 2px;
     }
 
@@ -126,7 +150,7 @@
       inset: 0;
       z-index: -2;
       background:
-        radial-gradient(circle at 18% 20%, rgba(78, 232, 220, 0.28), transparent 24%),
+        radial-gradient(circle at 18% 20%, rgba(var(--accent-rgb), 0.28), transparent 24%),
         linear-gradient(145deg, #17233a 0%, #3a2032 42%, #06111f 100%);
     }
 
@@ -214,9 +238,9 @@
       height: 36px;
       flex: 0 0 auto;
       border-radius: 50%;
-      border: 1px solid rgba(78, 232, 220, 0.72);
+      border: 1px solid rgba(var(--accent-rgb), 0.72);
       background: rgba(6, 11, 18, 0.3);
-      box-shadow: 0 0 24px rgba(78, 232, 220, 0.18);
+      box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.18);
     }
 
     .tomato svg {
@@ -250,14 +274,14 @@
     .add-button:hover,
     .step-button:hover {
       transform: translateY(-1px);
-      border-color: rgba(78, 232, 220, 0.42);
-      background: rgba(78, 232, 220, 0.12);
+      border-color: rgba(var(--accent-rgb), 0.42);
+      background: rgba(var(--accent-rgb), 0.12);
     }
 
     .settings-toggle.active {
       color: #062c2b;
-      border-color: rgba(78, 232, 220, 0.8);
-      background: linear-gradient(135deg, rgba(78, 232, 220, 0.94), rgba(32, 199, 189, 0.74));
+      border-color: rgba(var(--accent-rgb), 0.8);
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.94), rgba(var(--accent-strong-rgb), 0.74));
     }
 
     .mode-switch {
@@ -292,8 +316,8 @@
 
     .mode-pill.active {
       color: #eaffff;
-      border-color: rgba(78, 232, 220, 0.24);
-      background: rgba(78, 232, 220, 0.28);
+      border-color: rgba(var(--accent-rgb), 0.24);
+      background: rgba(var(--accent-rgb), 0.28);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
@@ -333,8 +357,8 @@
       width: var(--progress, 100%);
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, rgba(78, 232, 220, 0.95), rgba(106, 255, 231, 0.82));
-      box-shadow: 0 0 22px rgba(78, 232, 220, 0.34);
+      background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.95), rgba(var(--accent-light-rgb), 0.82));
+      box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.34);
       transition: width 320ms linear;
     }
 
@@ -446,8 +470,8 @@
     }
 
     .switch.on {
-      border-color: rgba(78, 232, 220, 0.72);
-      background: rgba(78, 232, 220, 0.64);
+      border-color: rgba(var(--accent-rgb), 0.72);
+      background: rgba(var(--accent-rgb), 0.64);
     }
 
     .switch.on::after {
@@ -474,7 +498,7 @@
 
     .tab.active {
       color: var(--accent);
-      border-bottom-color: rgba(78, 232, 220, 0.62);
+      border-bottom-color: rgba(var(--accent-rgb), 0.62);
     }
 
     .settings-body {
@@ -482,7 +506,7 @@
       overflow-y: auto;
       padding: 10px 14px 12px;
       scrollbar-width: thin;
-      scrollbar-color: rgba(78, 232, 220, 0.42) rgba(255, 255, 255, 0.08);
+      scrollbar-color: rgba(var(--accent-rgb), 0.42) rgba(255, 255, 255, 0.08);
     }
 
     .tab-page {
@@ -574,15 +598,37 @@
       gap: 8px;
     }
 
+    .colour-row {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 9px;
+      align-items: end;
+    }
+
+    .hex-input {
+      width: 100%;
+      min-width: 0;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 9px;
+      background: rgba(5, 8, 14, 0.58);
+      color: var(--text);
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      outline: none;
+    }
+
     .add-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
       min-height: 34px;
-      border: 1px solid rgba(78, 232, 220, 0.28);
+      border: 1px solid rgba(var(--accent-rgb), 0.28);
       border-radius: 8px;
-      background: rgba(78, 232, 220, 0.08);
+      background: rgba(var(--accent-rgb), 0.08);
       color: var(--accent);
       font-size: 11px;
       font-weight: 720;
@@ -637,7 +683,7 @@
       overflow-y: auto;
       padding-right: 2px;
       scrollbar-width: thin;
-      scrollbar-color: rgba(78, 232, 220, 0.42) rgba(255, 255, 255, 0.08);
+      scrollbar-color: rgba(var(--accent-rgb), 0.42) rgba(255, 255, 255, 0.08);
     }
 
     #historySection {
@@ -741,9 +787,9 @@
           <div class="brand">
             <div class="tomato" aria-hidden="true">
               <svg width="23" height="23" viewBox="0 0 24 24" fill="none">
-                <path d="M12 7.2c5.1 0 8.1 3 8.1 7.1 0 4.1-3.2 6.8-8.1 6.8s-8.1-2.7-8.1-6.8c0-4.1 3-7.1 8.1-7.1Z" fill="#4ee8dc"/>
-                <path d="M12.2 7.5c-.5-2.6 1.1-4.2 3.8-4.7-.2 2.5-1.4 4.3-3.8 4.7Z" fill="#a7f3d0"/>
-                <path d="M11.9 7.5C10.6 5.4 8.7 5 6.5 5.8c1.5 1.8 3.1 2.4 5.4 1.7Z" fill="#5eead4"/>
+                <path d="M12 7.2c5.1 0 8.1 3 8.1 7.1 0 4.1-3.2 6.8-8.1 6.8s-8.1-2.7-8.1-6.8c0-4.1 3-7.1 8.1-7.1Z" fill="var(--accent)"/>
+                <path d="M12.2 7.5c-.5-2.6 1.1-4.2 3.8-4.7-.2 2.5-1.4 4.3-3.8 4.7Z" fill="var(--accent-leaf)"/>
+                <path d="M11.9 7.5C10.6 5.4 8.7 5 6.5 5.8c1.5 1.8 3.1 2.4 5.4 1.7Z" fill="var(--accent-strong)"/>
               </svg>
             </div>
             <div>
@@ -878,6 +924,20 @@
             </section>
 
             <section class="section">
+              <p class="section-title">UI Colour</p>
+              <div class="colour-row">
+                <div class="field">
+                  <label for="accentColor">Dropper</label>
+                  <input id="accentColor" type="color" value="#4ee8dc">
+                </div>
+                <div class="field">
+                  <label for="accentHex">Hex</label>
+                  <input class="hex-input" id="accentHex" type="text" value="#4EE8DC" spellcheck="false" maxlength="7">
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
               <p class="section-title">Background</p>
               <div class="background-row">
                 <div class="field">
@@ -956,6 +1016,8 @@
         addBreakSound: document.getElementById("addBreakSound"),
         clearAudio: document.getElementById("clearAudio"),
         fontStyle: document.getElementById("fontStyle"),
+        accentColor: document.getElementById("accentColor"),
+        accentHex: document.getElementById("accentHex"),
         soundInput: document.getElementById("soundInput"),
         backgroundSelect: document.getElementById("backgroundSelect"),
         uploadBackground: document.getElementById("uploadBackground"),
@@ -990,6 +1052,7 @@
         selectedBreakSoundId: "gentle-ping",
         selectedBackgroundId: "mountain-lake",
         selectedFontStyle: "rounded",
+        accentColor: "#4ee8dc",
         tint: 58,
         customSounds: [],
         customBackgrounds: [],
@@ -1087,6 +1150,36 @@
         return `${minutes}:${seconds}`;
       }
 
+      function normalizeHex(value) {
+        const match = String(value || "").trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
+        if (!match) return null;
+        const raw = match[1].toLowerCase();
+        const full = raw.length === 3 ? raw.split("").map((char) => char + char).join("") : raw;
+        return `#${full}`;
+      }
+
+      function hexToRgb(hex) {
+        const normalized = normalizeHex(hex) || defaults.accentColor;
+        const value = parseInt(normalized.slice(1), 16);
+        return {
+          r: (value >> 16) & 255,
+          g: (value >> 8) & 255,
+          b: value & 255
+        };
+      }
+
+      function rgbToHex(rgb) {
+        return `#${[rgb.r, rgb.g, rgb.b].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+      }
+
+      function mixRgb(base, target, amount) {
+        return {
+          r: Math.round(base.r + (target.r - base.r) * amount),
+          g: Math.round(base.g + (target.g - base.g) * amount),
+          b: Math.round(base.b + (target.b - base.b) * amount)
+        };
+      }
+
       function render() {
         const duration = getModeDurationSeconds(state.mode);
         const progress = duration > 0 ? Math.max(0, Math.min(100, (remainingSeconds / duration) * 100)) : 0;
@@ -1107,9 +1200,12 @@
         elements.tintSlider.value = state.tint;
         elements.tintValue.textContent = `${state.tint}%`;
         elements.fontStyle.value = state.selectedFontStyle;
+        elements.accentColor.value = state.accentColor;
+        elements.accentHex.value = state.accentColor.toUpperCase();
         elements.focusSound.value = state.selectedFocusSoundId;
         elements.breakSound.value = state.selectedBreakSoundId;
         elements.backgroundSelect.value = state.selectedBackgroundId;
+        applyAccentColor();
         applyFontStyle();
         applyBackground();
         renderHistory();
@@ -1156,6 +1252,23 @@
         const style = fontStyles.find((item) => item.id === state.selectedFontStyle) || fontStyles[0];
         document.documentElement.style.setProperty("--app-font", style.appFont);
         document.documentElement.style.setProperty("--timer-font", style.timerFont);
+      }
+
+      function applyAccentColor() {
+        const accent = normalizeHex(state.accentColor) || defaults.accentColor;
+        const rgb = hexToRgb(accent);
+        const strong = mixRgb(rgb, { r: 0, g: 0, b: 0 }, 0.18);
+        const light = mixRgb(rgb, { r: 255, g: 255, b: 255 }, 0.24);
+        const leaf = mixRgb(rgb, { r: 255, g: 255, b: 255 }, 0.48);
+
+        state.accentColor = accent;
+        document.documentElement.style.setProperty("--accent", accent);
+        document.documentElement.style.setProperty("--accent-rgb", `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+        document.documentElement.style.setProperty("--accent-strong", rgbToHex(strong));
+        document.documentElement.style.setProperty("--accent-strong-rgb", `${strong.r}, ${strong.g}, ${strong.b}`);
+        document.documentElement.style.setProperty("--accent-light", rgbToHex(light));
+        document.documentElement.style.setProperty("--accent-light-rgb", `${light.r}, ${light.g}, ${light.b}`);
+        document.documentElement.style.setProperty("--accent-leaf", rgbToHex(leaf));
       }
 
       function setMode(mode, resetTime = true) {
@@ -1445,6 +1558,7 @@
         state.customBackgrounds = [];
         state.selectedBackgroundId = "mountain-lake";
         state.selectedFontStyle = "rounded";
+        state.accentColor = defaults.accentColor;
         state.tint = 58;
         renderSelects();
         saveState();
@@ -1528,6 +1642,22 @@
           saveState();
           render();
         });
+        elements.accentColor.addEventListener("input", () => {
+          state.accentColor = normalizeHex(elements.accentColor.value) || defaults.accentColor;
+          render();
+          saveState();
+        });
+        elements.accentHex.addEventListener("change", () => {
+          const normalized = normalizeHex(elements.accentHex.value);
+          if (!normalized) {
+            render();
+            showToast("Use a hex colour");
+            return;
+          }
+          state.accentColor = normalized;
+          saveState();
+          render();
+        });
         elements.addFocusSound.addEventListener("click", () => {
           selectedSoundTarget = "focus";
           elements.soundInput.click();
@@ -1578,6 +1708,7 @@
       state.breakMinutes = clampMinutes(state.breakMinutes, 5);
       state.tint = Math.min(82, Math.max(25, Number(state.tint) || 58));
       if (!fontStyles.some((style) => style.id === state.selectedFontStyle)) state.selectedFontStyle = "rounded";
+      state.accentColor = normalizeHex(state.accentColor) || defaults.accentColor;
       state.customSounds = Array.isArray(state.customSounds) ? state.customSounds : [];
       state.customBackgrounds = Array.isArray(state.customBackgrounds) ? state.customBackgrounds : [];
       state.history = Array.isArray(state.history) ? state.history : [];
