@@ -221,19 +221,6 @@
       transition: opacity 220ms ease, transform 260ms ease;
     }
 
-    .settings::before {
-      content: "";
-      position: absolute;
-      top: -13px;
-      left: 108px;
-      width: 28px;
-      height: 28px;
-      border-top: 1px solid rgba(255, 255, 255, 0.24);
-      border-left: 1px solid rgba(255, 255, 255, 0.24);
-      background: rgba(9, 11, 17, 0.76);
-      transform: rotate(45deg);
-    }
-
     .app.focus-mode .settings {
       opacity: 0;
       pointer-events: none;
@@ -701,8 +688,9 @@
 
     .history-list {
       display: grid;
+      flex: 1;
       gap: 6px;
-      max-height: 130px;
+      min-height: 0;
       overflow-y: auto;
       padding-right: 2px;
       scrollbar-width: thin;
@@ -982,7 +970,7 @@
                 <input id="tintSlider" type="range" min="25" max="82" value="58">
               </div>
               <button class="add-button" id="resetBackground" type="button">Reset Appearance</button>
-              <p class="tip">Tip: upload your own image for a personal vibe.</p>
+              <p class="tip">Tip: large photos are resized before saving.</p>
             </section>
           </div>
 
@@ -1017,7 +1005,9 @@
 
   <script>
     (() => {
-      const MAX_FILE_SIZE = 2 * 1024 * 1024;
+      const MAX_SOUND_FILE_SIZE = 2 * 1024 * 1024;
+      const MAX_BACKGROUND_FILE_SIZE = 24 * 1024 * 1024;
+      const MAX_BACKGROUND_DATA_LENGTH = 1700000;
       const STORAGE_KEY = "macPomodoroState.v1";
       const DEFAULT_BACKGROUND = 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1600 900%27%3E%3Cdefs%3E%3ClinearGradient id=%27sky%27 x1=%270%27 x2=%270%27 y1=%270%27 y2=%271%27%3E%3Cstop stop-color=%27%2313223f%27/%3E%3Cstop offset=%270.42%27 stop-color=%27%23412838%27/%3E%3Cstop offset=%271%27 stop-color=%27%23040b13%27/%3E%3C/linearGradient%3E%3ClinearGradient id=%27lake%27 x1=%270%27 x2=%270%27 y1=%270%27 y2=%271%27%3E%3Cstop stop-color=%27%232e5361%27/%3E%3Cstop offset=%271%27 stop-color=%27%2308131b%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%271600%27 height=%27900%27 fill=%27url(%23sky)%27/%3E%3Ccircle cx=%27845%27 cy=%27325%27 r=%27210%27 fill=%27%23f4ad82%27 opacity=%27.34%27/%3E%3Cpath d=%27M0 560 210 250l180 245 170-190 230 255 160-205 280 260 150-160 220 205v240H0Z%27 fill=%27%23070d15%27 opacity=%27.88%27/%3E%3Cpath d=%27M0 640h1600v260H0z%27 fill=%27url(%23lake)%27 opacity=%27.9%27/%3E%3Cpath d=%27M520 900c130-150 350-226 552-260 188-32 352-16 528 8v252Z%27 fill=%27%2304090e%27 opacity=%27.64%27/%3E%3Cpath d=%27M0 724c210-58 404-72 598-35 184 35 322 111 480 158H0Z%27 fill=%27%23050b12%27 opacity=%27.68%27/%3E%3C/svg%3E")';
 
@@ -1443,25 +1433,78 @@
         render();
       }
 
-      function uploadFile(file, kind) {
+      function readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error("Could not read file"));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function loadImage(data) {
+        return new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = () => reject(new Error("Could not process image"));
+          image.src = data;
+        });
+      }
+
+      async function prepareBackgroundData(file) {
+        const originalData = await readFileAsDataURL(file);
+        if (originalData.length <= MAX_BACKGROUND_DATA_LENGTH) return originalData;
+
+        const image = await loadImage(originalData);
+        let fallback = originalData;
+
+        for (const maxEdge of [1600, 1200, 900]) {
+          const scale = Math.min(1, maxEdge / Math.max(image.naturalWidth, image.naturalHeight));
+          const width = Math.max(1, Math.round(image.naturalWidth * scale));
+          const height = Math.max(1, Math.round(image.naturalHeight * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const context = canvas.getContext("2d");
+          if (!context) continue;
+          context.drawImage(image, 0, 0, width, height);
+
+          for (const quality of [0.82, 0.72, 0.62]) {
+            const compressed = canvas.toDataURL("image/jpeg", quality);
+            fallback = compressed;
+            if (compressed.length <= MAX_BACKGROUND_DATA_LENGTH) return compressed;
+          }
+        }
+
+        return fallback;
+      }
+
+      async function uploadFile(file, kind) {
         if (!file) return;
-        if (file.size > MAX_FILE_SIZE) {
-          showToast("File too large");
+
+        if (kind === "sound" && file.size > MAX_SOUND_FILE_SIZE) {
+          showToast("Sound too large");
           return;
         }
 
-        const reader = new FileReader();
-        reader.onload = () => {
+        if (kind === "background" && file.size > MAX_BACKGROUND_FILE_SIZE) {
+          showToast("Image too large");
+          return;
+        }
+
+        try {
           const id = `${kind}-${Date.now()}`;
           const name = file.name.replace(/\.[^/.]+$/, "").slice(0, 24) || "Custom";
-          const data = String(reader.result);
 
           if (kind === "sound") {
+            const data = await readFileAsDataURL(file);
             state.customSounds.push({ id, name, data });
             if (selectedSoundTarget === "focus") state.selectedFocusSoundId = id;
             else state.selectedBreakSoundId = id;
             showToast("Sound saved");
           } else {
+            showToast("Preparing image...");
+            const data = await prepareBackgroundData(file);
             state.customBackgrounds.push({ id, name, data });
             state.selectedBackgroundId = id;
             showToast("Image saved");
@@ -1470,9 +1513,9 @@
           renderSelects();
           saveState();
           render();
-        };
-        reader.onerror = () => showToast("Could not read file");
-        reader.readAsDataURL(file);
+        } catch {
+          showToast(kind === "background" ? "Could not save image" : "Could not read file");
+        }
       }
 
       function recordFocusSession(seconds) {
