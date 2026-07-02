@@ -12,4 +12,6 @@ Open `index.html` in a browser to use it. All CSS and JavaScript are embedded in
 - Default Web Audio soft bell, plus separate custom Focus and Break chimes
 - Custom wallpaper-style backgrounds with cover cropping
 - Darkness/Tint slider for readability over uploaded images
+- Reset controls for custom audio and background settings
+- History tab with past-week focus hours, daily logs, JSON export, and clear history
 - Toast feedback instead of native alerts

@@ -562,6 +562,12 @@
       align-items: end;
     }
 
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
     .add-button {
       display: inline-flex;
       align-items: center;
@@ -578,11 +584,82 @@
       white-space: nowrap;
     }
 
+    .section > .add-button {
+      width: 100%;
+    }
+
     .tip {
       margin: 0;
       color: rgba(255, 255, 255, 0.48);
       font-size: 10px;
       line-height: 1.4;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-card {
+      min-width: 0;
+      padding: 9px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .stat-value {
+      margin: 0;
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: 780;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      margin: 2px 0 0;
+      color: rgba(255, 255, 255, 0.58);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 6px;
+      max-height: 130px;
+      overflow-y: auto;
+      padding-right: 2px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(78, 232, 220, 0.42) rgba(255, 255, 255, 0.08);
+    }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .history-day {
+      min-width: 0;
+      overflow: hidden;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 11px;
+      font-weight: 720;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-meta {
+      color: rgba(255, 255, 255, 0.58);
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
     .hidden-input {
@@ -731,9 +808,9 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="m6.5 16 4.2-4.1 3.2 3.2 2-2 1.6 2.9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.5" cy="9.5" r="1.3" fill="currentColor"/></svg>
             Background
           </button>
-          <button class="tab" id="aboutTab" type="button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            About
+          <button class="tab" id="historyTab" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19V9M12 19V5M19 19v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            History
           </button>
         </div>
 
@@ -776,6 +853,7 @@
               </div>
               <button class="add-button" id="addBreakSound" type="button">+ Add</button>
             </div>
+            <button class="add-button" id="clearAudio" type="button">Clear Audio</button>
           </section>
 
           <section class="section" id="backgroundSection">
@@ -791,7 +869,27 @@
               <label for="tintSlider">Darkness / Tint <span id="tintValue">58%</span></label>
               <input id="tintSlider" type="range" min="25" max="82" value="58">
             </div>
+            <button class="add-button" id="resetBackground" type="button">Reset Background</button>
             <p class="tip">Tip: upload your own image for a personal vibe.</p>
+          </section>
+
+          <section class="section" id="historySection">
+            <p class="section-title">History</p>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <p class="stat-value" id="weekHours">0.0h</p>
+                <p class="stat-label">Past week focus</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-value" id="weekSessions">0</p>
+                <p class="stat-label">Sessions</p>
+              </div>
+            </div>
+            <div class="history-list" id="historyList"></div>
+            <div class="action-row">
+              <button class="add-button" id="copyHistoryJson" type="button">Copy JSON</button>
+              <button class="add-button" id="clearHistory" type="button">Clear History</button>
+            </div>
           </section>
         </div>
       </aside>
@@ -831,18 +929,26 @@
         breakSound: document.getElementById("breakSound"),
         addFocusSound: document.getElementById("addFocusSound"),
         addBreakSound: document.getElementById("addBreakSound"),
+        clearAudio: document.getElementById("clearAudio"),
         soundInput: document.getElementById("soundInput"),
         backgroundSelect: document.getElementById("backgroundSelect"),
         uploadBackground: document.getElementById("uploadBackground"),
+        resetBackground: document.getElementById("resetBackground"),
         backgroundInput: document.getElementById("backgroundInput"),
         tintSlider: document.getElementById("tintSlider"),
         tintValue: document.getElementById("tintValue"),
         toastStack: document.getElementById("toastStack"),
         timerTab: document.getElementById("timerTab"),
         backgroundTab: document.getElementById("backgroundTab"),
-        aboutTab: document.getElementById("aboutTab"),
+        historyTab: document.getElementById("historyTab"),
         timerSection: document.getElementById("timerSection"),
-        backgroundSection: document.getElementById("backgroundSection")
+        backgroundSection: document.getElementById("backgroundSection"),
+        historySection: document.getElementById("historySection"),
+        weekHours: document.getElementById("weekHours"),
+        weekSessions: document.getElementById("weekSessions"),
+        historyList: document.getElementById("historyList"),
+        copyHistoryJson: document.getElementById("copyHistoryJson"),
+        clearHistory: document.getElementById("clearHistory")
       };
 
       const defaults = {
@@ -852,11 +958,12 @@
         focusMinutes: 25,
         breakMinutes: 5,
         selectedFocusSoundId: "soft-bell",
-        selectedBreakSoundId: "soft-bell",
+        selectedBreakSoundId: "gentle-ping",
         selectedBackgroundId: "mountain-lake",
         tint: 58,
         customSounds: [],
-        customBackgrounds: []
+        customBackgrounds: [],
+        history: []
       };
 
       const builtInSounds = [
@@ -935,6 +1042,7 @@
         elements.breakSound.value = state.selectedBreakSoundId;
         elements.backgroundSelect.value = state.selectedBackgroundId;
         applyBackground();
+        renderHistory();
       }
 
       function renderSelects() {
@@ -1013,14 +1121,17 @@
       }
 
       function completeTimer() {
+        const completedMode = state.mode;
+        const completedSeconds = getModeDurationSeconds(completedMode);
         clearInterval(timerId);
         timerId = null;
         state.isRunning = false;
-        playSelectedSound(state.mode);
-        showToast(state.mode === "focus" ? "Focus complete" : "Break complete");
+        if (completedMode === "focus") recordFocusSession(completedSeconds);
+        playSelectedSound(completedMode);
+        showToast(completedMode === "focus" ? "Focus complete" : "Break complete");
 
         if (state.cycleEnabled) {
-          state.mode = state.mode === "focus" ? "break" : "focus";
+          state.mode = completedMode === "focus" ? "break" : "focus";
           remainingSeconds = getModeDurationSeconds(state.mode);
           state.settingsOpen = false;
           render();
@@ -1116,10 +1227,157 @@
         reader.readAsDataURL(file);
       }
 
+      function recordFocusSession(seconds) {
+        state.history.push({
+          completedAt: new Date().toISOString(),
+          seconds
+        });
+        state.history = state.history.slice(-240);
+        saveState();
+      }
+
+      function getLocalDateKey(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function formatHistoryDay(key) {
+        const date = new Date(`${key}T00:00:00`);
+        return date.toLocaleDateString(undefined, {
+          weekday: "short",
+          month: "short",
+          day: "numeric"
+        });
+      }
+
+      function getWeeklyHistory() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const days = [];
+        for (let offset = 0; offset < 7; offset += 1) {
+          const date = new Date(today);
+          date.setDate(today.getDate() - offset);
+          days.push({
+            key: getLocalDateKey(date),
+            sessions: 0,
+            seconds: 0
+          });
+        }
+
+        const byDay = new Map(days.map((day) => [day.key, day]));
+        for (const item of state.history) {
+          const completed = new Date(item.completedAt);
+          if (Number.isNaN(completed.getTime())) continue;
+          completed.setHours(0, 0, 0, 0);
+          const ageDays = Math.round((today - completed) / 86400000);
+          if (ageDays < 0 || ageDays > 6) continue;
+          const key = getLocalDateKey(completed);
+          const day = byDay.get(key);
+          if (!day) continue;
+          day.sessions += 1;
+          day.seconds += Math.max(0, Number(item.seconds) || 0);
+        }
+
+        const totalSeconds = days.reduce((sum, day) => sum + day.seconds, 0);
+        const totalSessions = days.reduce((sum, day) => sum + day.sessions, 0);
+        return { days, totalSeconds, totalSessions };
+      }
+
+      function buildHistoryExport() {
+        const weekly = getWeeklyHistory();
+        return {
+          exportedAt: new Date().toISOString(),
+          pastWeek: {
+            focusHours: Number((weekly.totalSeconds / 3600).toFixed(2)),
+            sessions: weekly.totalSessions,
+            days: weekly.days.map((day) => ({
+              date: day.key,
+              sessions: day.sessions,
+              focusHours: Number((day.seconds / 3600).toFixed(2))
+            }))
+          },
+          sessions: state.history.slice()
+        };
+      }
+
+      function renderHistory() {
+        const weekly = getWeeklyHistory();
+        elements.weekHours.textContent = `${(weekly.totalSeconds / 3600).toFixed(1)}h`;
+        elements.weekSessions.textContent = String(weekly.totalSessions);
+        elements.historyList.innerHTML = "";
+
+        for (const day of weekly.days) {
+          const item = document.createElement("div");
+          item.className = "history-item";
+
+          const label = document.createElement("div");
+          label.className = "history-day";
+          label.textContent = formatHistoryDay(day.key);
+
+          const meta = document.createElement("div");
+          meta.className = "history-meta";
+          const hours = (day.seconds / 3600).toFixed(1);
+          meta.textContent = `${day.sessions}x · ${hours}h`;
+
+          item.append(label, meta);
+          elements.historyList.appendChild(item);
+        }
+      }
+
+      async function copyHistoryJson() {
+        const json = JSON.stringify(buildHistoryExport(), null, 2);
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(json);
+          } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = json;
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            textArea.remove();
+          }
+          showToast("JSON copied");
+        } catch {
+          showToast("Could not copy JSON");
+        }
+      }
+
+      function clearAudio() {
+        state.customSounds = [];
+        state.selectedFocusSoundId = "soft-bell";
+        state.selectedBreakSoundId = "gentle-ping";
+        renderSelects();
+        saveState();
+        render();
+        showToast("Audio cleared");
+      }
+
+      function resetBackground() {
+        state.customBackgrounds = [];
+        state.selectedBackgroundId = "mountain-lake";
+        state.tint = 58;
+        renderSelects();
+        saveState();
+        render();
+        showToast("Background reset");
+      }
+
+      function clearHistory() {
+        state.history = [];
+        saveState();
+        render();
+        showToast("History cleared");
+      }
+
       function setActiveTab(tab) {
         elements.timerTab.classList.toggle("active", tab === "timer");
         elements.backgroundTab.classList.toggle("active", tab === "background");
-        elements.aboutTab.classList.toggle("active", tab === "about");
+        elements.historyTab.classList.toggle("active", tab === "history");
       }
 
       function showToast(message) {
@@ -1184,6 +1442,7 @@
           selectedSoundTarget = "break";
           elements.soundInput.click();
         });
+        elements.clearAudio.addEventListener("click", clearAudio);
         elements.soundInput.addEventListener("change", () => {
           uploadFile(elements.soundInput.files[0], "sound");
           elements.soundInput.value = "";
@@ -1195,6 +1454,7 @@
           render();
         });
         elements.uploadBackground.addEventListener("click", () => elements.backgroundInput.click());
+        elements.resetBackground.addEventListener("click", resetBackground);
         elements.backgroundInput.addEventListener("change", () => {
           uploadFile(elements.backgroundInput.files[0], "background");
           elements.backgroundInput.value = "";
@@ -1213,10 +1473,12 @@
           setActiveTab("background");
           elements.backgroundSection.scrollIntoView({ behavior: "smooth", block: "start" });
         });
-        elements.aboutTab.addEventListener("click", () => {
-          setActiveTab("about");
-          showToast("Single-file Pomodoro");
+        elements.historyTab.addEventListener("click", () => {
+          setActiveTab("history");
+          elements.historySection.scrollIntoView({ behavior: "smooth", block: "start" });
         });
+        elements.copyHistoryJson.addEventListener("click", copyHistoryJson);
+        elements.clearHistory.addEventListener("click", clearHistory);
 
         window.addEventListener("beforeunload", saveState);
       }
@@ -1224,6 +1486,9 @@
       state.focusMinutes = clampMinutes(state.focusMinutes, 25);
       state.breakMinutes = clampMinutes(state.breakMinutes, 5);
       state.tint = Math.min(82, Math.max(25, Number(state.tint) || 58));
+      state.customSounds = Array.isArray(state.customSounds) ? state.customSounds : [];
+      state.customBackgrounds = Array.isArray(state.customBackgrounds) ? state.customBackgrounds : [];
+      state.history = Array.isArray(state.history) ? state.history : [];
       state.settingsOpen = true;
       remainingSeconds = Math.min(remainingSeconds, getModeDurationSeconds(state.mode));
 
