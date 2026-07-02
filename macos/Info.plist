@@ -9,7 +9,7 @@
   <key>CFBundleIdentifier</key>
   <string>com.dewflash.pomodewro</string>
   <key>CFBundleIconFile</key>
-  <string>Pomodewro</string>
+  <string>Pomodewro.icns</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
