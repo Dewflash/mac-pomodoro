@@ -422,6 +422,28 @@
       font-weight: 620;
     }
 
+    .alarm-stop {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 34px;
+      margin: -4px 0 10px;
+      border: 1px solid rgba(255, 116, 116, 0.38);
+      border-radius: 12px;
+      background: rgba(140, 28, 28, 0.28);
+      color: #ffd6d6;
+      font-size: 12px;
+      font-weight: 760;
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+    }
+
+    .alarm-stop[hidden] {
+      display: none;
+    }
+
     .cycle-card {
       display: flex;
       align-items: center;
@@ -852,6 +874,11 @@
           </button>
         </div>
 
+        <button class="alarm-stop" id="stopAlarm" type="button" hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+          Stop Alarm
+        </button>
+
         <div>
           <div class="cycle-card">
             <div class="cycle-left">
@@ -922,7 +949,7 @@
                 <button class="add-button" id="addBreakSound" type="button">+ Add</button>
               </div>
               <button class="add-button" id="clearAudio" type="button">Clear Audio</button>
-              <p class="tip">Tip: use a short audio clip under 2 MB.</p>
+              <p class="tip">Tip: the native app can keep longer local sounds.</p>
             </section>
           </div>
 
@@ -1032,6 +1059,7 @@
         playButton: document.getElementById("playButton"),
         pauseButton: document.getElementById("pauseButton"),
         resetButton: document.getElementById("resetButton"),
+        stopAlarm: document.getElementById("stopAlarm"),
         cycleToggle: document.getElementById("cycleToggle"),
         focusMinutes: document.getElementById("focusMinutes"),
         breakMinutes: document.getElementById("breakMinutes"),
@@ -1148,6 +1176,9 @@
       let timerId = null;
       let targetEndTime = 0;
       let appliedBackgroundKey = "";
+      let activeAlarmAudio = null;
+      let activeAlarmContext = null;
+      let activeAlarmTimeout = null;
 
       function loadState() {
         try {
@@ -1401,21 +1432,69 @@
         }
       }
 
+      function setAlarmStopVisible(isVisible) {
+        elements.stopAlarm.hidden = !isVisible;
+      }
+
+      function clearActiveAlarmUi() {
+        activeAlarmAudio = null;
+        activeAlarmContext = null;
+        if (activeAlarmTimeout) {
+          clearTimeout(activeAlarmTimeout);
+          activeAlarmTimeout = null;
+        }
+        setAlarmStopVisible(false);
+      }
+
+      function stopAlarm(showMessage = true) {
+        const hadAlarm = Boolean(activeAlarmAudio || activeAlarmContext || activeAlarmTimeout);
+
+        if (activeAlarmAudio) {
+          activeAlarmAudio.pause();
+          activeAlarmAudio.currentTime = 0;
+          activeAlarmAudio.removeAttribute("src");
+          activeAlarmAudio.load();
+        }
+
+        if (activeAlarmContext) {
+          activeAlarmContext.close().catch(() => {});
+        }
+
+        clearActiveAlarmUi();
+        if (showMessage && hadAlarm) showToast("Alarm stopped");
+      }
+
+      function playAudioAlarm(source) {
+        stopAlarm(false);
+
+        const audio = new Audio(source);
+        activeAlarmAudio = audio;
+        audio.volume = 0.78;
+        setAlarmStopVisible(true);
+
+        audio.addEventListener("ended", () => {
+          if (activeAlarmAudio === audio) clearActiveAlarmUi();
+        });
+        audio.addEventListener("error", () => {
+          if (activeAlarmAudio === audio) clearActiveAlarmUi();
+        });
+        audio.play().catch(() => {
+          if (activeAlarmAudio === audio) clearActiveAlarmUi();
+          showToast("Tap once to enable audio");
+        });
+      }
+
       function playSelectedSound(mode) {
         const soundId = mode === "focus" ? state.selectedFocusSoundId : state.selectedBreakSoundId;
         const custom = state.customSounds.find((sound) => sound.id === soundId);
         if (custom) {
-          const audio = new Audio(custom.data);
-          audio.volume = 0.78;
-          audio.play().catch(() => showToast("Tap once to enable audio"));
+          playAudioAlarm(custom.data);
           return;
         }
 
         const native = state.nativeSounds.find((sound) => sound.id === soundId);
         if (native) {
-          const audio = new Audio(native.url);
-          audio.volume = 0.78;
-          audio.play().catch(() => showToast("Tap once to enable audio"));
+          playAudioAlarm(native.url);
           return;
         }
 
@@ -1423,6 +1502,7 @@
       }
 
       function playGeneratedChime(kind) {
+        stopAlarm(false);
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) {
           showToast("Audio unavailable");
@@ -1430,6 +1510,8 @@
         }
 
         const ctx = new AudioContext();
+        activeAlarmContext = ctx;
+        setAlarmStopVisible(true);
         const now = ctx.currentTime;
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0.0001, now);
@@ -1448,7 +1530,12 @@
           osc.stop(now + 1.16);
         });
 
-        window.setTimeout(() => ctx.close(), 1400);
+        activeAlarmTimeout = window.setTimeout(() => {
+          if (activeAlarmContext === ctx) {
+            ctx.close().catch(() => {});
+            clearActiveAlarmUi();
+          }
+        }, 1400);
       }
 
       function changeMinutes(kind, delta) {
@@ -1702,6 +1789,7 @@
       }
 
       function clearAudio() {
+        stopAlarm(false);
         state.customSounds = [];
         state.nativeSounds = [];
         state.selectedFocusSoundId = "soft-bell";
@@ -1767,6 +1855,7 @@
         elements.playButton.addEventListener("click", startTimer);
         elements.pauseButton.addEventListener("click", pauseTimer);
         elements.resetButton.addEventListener("click", resetTimer);
+        elements.stopAlarm.addEventListener("click", () => stopAlarm(true));
         elements.cycleToggle.addEventListener("click", () => {
           state.cycleEnabled = !state.cycleEnabled;
           saveState();
