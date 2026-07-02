@@ -17,7 +17,7 @@ The built app appears at `build/Pomodewro.app`. It bundles the HTML locally, so 
 - Pomodoro Cycle toggle that auto-switches Focus and Break sessions
 - Wide rectangular glassmorphism layout with a collapsible settings panel while running
 - Default Web Audio soft bell, plus separate custom Focus and Break chimes
-- Appearance tab with font presets, UI colour control, wallpaper-style backgrounds, and cover cropping
+- Appearance tab with font presets, UI colour control, timer transparency, wallpaper-style backgrounds, and cover cropping
 - Darkness/Tint slider for readability over uploaded images
 - Reset controls for custom audio and background settings
 - History tab with past-week focus hours, daily logs, JSON export, and clear history

@@ -201,9 +201,14 @@
       gap: 9px;
       padding: 20px 22px 14px;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
-      background: linear-gradient(90deg, rgba(6, 9, 18, 0.18), rgba(6, 9, 18, 0.03));
+      background: linear-gradient(
+        90deg,
+        rgba(6, 9, 18, var(--timer-panel-start-opacity, 0.18)),
+        rgba(6, 9, 18, var(--timer-panel-end-opacity, 0.03))
+      );
       -webkit-backdrop-filter: blur(3px);
       backdrop-filter: blur(3px);
+      transition: background 180ms ease;
     }
 
     .settings {
@@ -959,6 +964,14 @@
             </section>
 
             <section class="section">
+              <p class="section-title">Timer Transparency</p>
+              <div class="field">
+                <label for="timerTransparency">Background <span id="timerTransparencyValue">82%</span></label>
+                <input id="timerTransparency" type="range" min="35" max="100" value="82">
+              </div>
+            </section>
+
+            <section class="section">
               <p class="section-title">Background</p>
               <div class="background-row">
                 <div class="field">
@@ -1050,6 +1063,8 @@
         uploadBackground: document.getElementById("uploadBackground"),
         resetBackground: document.getElementById("resetBackground"),
         backgroundInput: document.getElementById("backgroundInput"),
+        timerTransparency: document.getElementById("timerTransparency"),
+        timerTransparencyValue: document.getElementById("timerTransparencyValue"),
         tintSlider: document.getElementById("tintSlider"),
         tintValue: document.getElementById("tintValue"),
         toastStack: document.getElementById("toastStack"),
@@ -1080,6 +1095,7 @@
         selectedBackgroundId: "mountain-lake",
         selectedFontStyle: "rounded",
         accentColor: "#4ee8dc",
+        timerTransparency: 82,
         tint: 58,
         customSounds: [],
         customBackgrounds: [],
@@ -1207,6 +1223,12 @@
         };
       }
 
+      function applyTimerTransparency() {
+        const opacity = (100 - state.timerTransparency) / 100;
+        elements.shell.style.setProperty("--timer-panel-start-opacity", opacity.toFixed(2));
+        elements.shell.style.setProperty("--timer-panel-end-opacity", (opacity * 0.17).toFixed(2));
+      }
+
       function render() {
         const duration = getModeDurationSeconds(state.mode);
         const progress = duration > 0 ? Math.max(0, Math.min(100, (remainingSeconds / duration) * 100)) : 0;
@@ -1224,6 +1246,8 @@
         elements.cycleToggle.setAttribute("aria-pressed", String(state.cycleEnabled));
         elements.focusMinutes.value = state.focusMinutes;
         elements.breakMinutes.value = state.breakMinutes;
+        elements.timerTransparency.value = state.timerTransparency;
+        elements.timerTransparencyValue.textContent = `${state.timerTransparency}%`;
         elements.tintSlider.value = state.tint;
         elements.tintValue.textContent = `${state.tint}%`;
         elements.fontStyle.value = state.selectedFontStyle;
@@ -1232,6 +1256,7 @@
         elements.focusSound.value = state.selectedFocusSoundId;
         elements.breakSound.value = state.selectedBreakSoundId;
         elements.backgroundSelect.value = state.selectedBackgroundId;
+        applyTimerTransparency();
         applyAccentColor();
         applyFontStyle();
         applyBackground();
@@ -1586,6 +1611,7 @@
         state.selectedBackgroundId = "mountain-lake";
         state.selectedFontStyle = "rounded";
         state.accentColor = defaults.accentColor;
+        state.timerTransparency = defaults.timerTransparency;
         state.tint = 58;
         renderSelects();
         saveState();
@@ -1710,6 +1736,11 @@
           uploadFile(elements.backgroundInput.files[0], "background");
           elements.backgroundInput.value = "";
         });
+        elements.timerTransparency.addEventListener("input", () => {
+          state.timerTransparency = Number(elements.timerTransparency.value);
+          render();
+        });
+        elements.timerTransparency.addEventListener("change", saveState);
         elements.tintSlider.addEventListener("input", () => {
           state.tint = Number(elements.tintSlider.value);
           render();
@@ -1733,6 +1764,7 @@
 
       state.focusMinutes = clampMinutes(state.focusMinutes, 25);
       state.breakMinutes = clampMinutes(state.breakMinutes, 5);
+      state.timerTransparency = Math.min(100, Math.max(35, Number(state.timerTransparency) || 82));
       state.tint = Math.min(82, Math.max(25, Number(state.tint) || 58));
       if (!fontStyles.some((style) => style.id === state.selectedFontStyle)) state.selectedFontStyle = "rounded";
       state.accentColor = normalizeHex(state.accentColor) || defaults.accentColor;
