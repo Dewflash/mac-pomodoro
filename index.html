@@ -177,10 +177,17 @@
 
     .tint {
       position: absolute;
-      inset: 0;
+      top: 0;
+      right: 292px;
+      bottom: 0;
+      left: 0;
       z-index: -1;
       background: rgba(0, 0, 0, var(--tint, 0.58));
-      transition: background 180ms ease;
+      transition: background 180ms ease, right 260ms ease;
+    }
+
+    .shell.focus-mode .tint {
+      right: 0;
     }
 
     .app {
@@ -964,10 +971,10 @@
             </section>
 
             <section class="section">
-              <p class="section-title">Timer Transparency</p>
+              <p class="section-title">Timer Shade</p>
               <div class="field">
-                <label for="timerTransparency">Background <span id="timerTransparencyValue">82%</span></label>
-                <input id="timerTransparency" type="range" min="35" max="100" value="82">
+                <label for="timerShade">Shade <span id="timerShadeValue">100%</span></label>
+                <input id="timerShade" type="range" min="0" max="100" value="100">
               </div>
             </section>
 
@@ -1063,8 +1070,8 @@
         uploadBackground: document.getElementById("uploadBackground"),
         resetBackground: document.getElementById("resetBackground"),
         backgroundInput: document.getElementById("backgroundInput"),
-        timerTransparency: document.getElementById("timerTransparency"),
-        timerTransparencyValue: document.getElementById("timerTransparencyValue"),
+        timerShade: document.getElementById("timerShade"),
+        timerShadeValue: document.getElementById("timerShadeValue"),
         tintSlider: document.getElementById("tintSlider"),
         tintValue: document.getElementById("tintValue"),
         toastStack: document.getElementById("toastStack"),
@@ -1095,7 +1102,7 @@
         selectedBackgroundId: "mountain-lake",
         selectedFontStyle: "rounded",
         accentColor: "#4ee8dc",
-        timerTransparency: 82,
+        timerShade: 100,
         tint: 58,
         customSounds: [],
         customBackgrounds: [],
@@ -1223,10 +1230,11 @@
         };
       }
 
-      function applyTimerTransparency() {
-        const opacity = (100 - state.timerTransparency) / 100;
-        elements.shell.style.setProperty("--timer-panel-start-opacity", opacity.toFixed(2));
-        elements.shell.style.setProperty("--timer-panel-end-opacity", (opacity * 0.17).toFixed(2));
+      function applyTimerShade() {
+        const shade = state.timerShade / 100;
+        elements.shell.style.setProperty("--tint", ((state.tint / 100) * shade).toFixed(2));
+        elements.shell.style.setProperty("--timer-panel-start-opacity", (0.18 * shade).toFixed(2));
+        elements.shell.style.setProperty("--timer-panel-end-opacity", (0.03 * shade).toFixed(2));
       }
 
       function render() {
@@ -1237,7 +1245,7 @@
         elements.timerDisplay.textContent = formatTime(remainingSeconds);
         elements.durationLabel.textContent = formatTime(duration);
         elements.shell.style.setProperty("--progress", `${progress}%`);
-        elements.shell.style.setProperty("--tint", String(state.tint / 100));
+        elements.shell.classList.toggle("focus-mode", !settingsOpen);
         elements.app.classList.toggle("focus-mode", !settingsOpen);
         elements.settingsButton.classList.toggle("active", settingsOpen && state.isRunning);
         elements.focusModeButton.classList.toggle("active", state.mode === "focus");
@@ -1246,8 +1254,8 @@
         elements.cycleToggle.setAttribute("aria-pressed", String(state.cycleEnabled));
         elements.focusMinutes.value = state.focusMinutes;
         elements.breakMinutes.value = state.breakMinutes;
-        elements.timerTransparency.value = state.timerTransparency;
-        elements.timerTransparencyValue.textContent = `${state.timerTransparency}%`;
+        elements.timerShade.value = state.timerShade;
+        elements.timerShadeValue.textContent = `${state.timerShade}%`;
         elements.tintSlider.value = state.tint;
         elements.tintValue.textContent = `${state.tint}%`;
         elements.fontStyle.value = state.selectedFontStyle;
@@ -1256,7 +1264,7 @@
         elements.focusSound.value = state.selectedFocusSoundId;
         elements.breakSound.value = state.selectedBreakSoundId;
         elements.backgroundSelect.value = state.selectedBackgroundId;
-        applyTimerTransparency();
+        applyTimerShade();
         applyAccentColor();
         applyFontStyle();
         applyBackground();
@@ -1611,7 +1619,7 @@
         state.selectedBackgroundId = "mountain-lake";
         state.selectedFontStyle = "rounded";
         state.accentColor = defaults.accentColor;
-        state.timerTransparency = defaults.timerTransparency;
+        state.timerShade = defaults.timerShade;
         state.tint = 58;
         renderSelects();
         saveState();
@@ -1736,11 +1744,11 @@
           uploadFile(elements.backgroundInput.files[0], "background");
           elements.backgroundInput.value = "";
         });
-        elements.timerTransparency.addEventListener("input", () => {
-          state.timerTransparency = Number(elements.timerTransparency.value);
+        elements.timerShade.addEventListener("input", () => {
+          state.timerShade = Number(elements.timerShade.value);
           render();
         });
-        elements.timerTransparency.addEventListener("change", saveState);
+        elements.timerShade.addEventListener("change", saveState);
         elements.tintSlider.addEventListener("input", () => {
           state.tint = Number(elements.tintSlider.value);
           render();
@@ -1764,7 +1772,7 @@
 
       state.focusMinutes = clampMinutes(state.focusMinutes, 25);
       state.breakMinutes = clampMinutes(state.breakMinutes, 5);
-      state.timerTransparency = Math.min(100, Math.max(35, Number(state.timerTransparency) || 82));
+      state.timerShade = Math.min(100, Math.max(0, Number(state.timerShade ?? 100)));
       state.tint = Math.min(82, Math.max(25, Number(state.tint) || 58));
       if (!fontStyles.some((style) => style.id === state.selectedFontStyle)) state.selectedFontStyle = "rounded";
       state.accentColor = normalizeHex(state.accentColor) || defaults.accentColor;
