@@ -1,4 +1,5 @@
 import AppKit
+import UniformTypeIdentifiers
 import WebKit
 
 private enum AppConfig {
@@ -70,11 +71,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-final class WebViewController: NSViewController, WKUIDelegate {
+final class WebViewController: NSViewController, WKUIDelegate, WKScriptMessageHandler {
     private var didLoad = false
+    private let soundStore = SoundStore()
+    private lazy var soundSchemeHandler = SoundSchemeHandler(store: soundStore)
     private lazy var webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()
+        configuration.setURLSchemeHandler(soundSchemeHandler, forURLScheme: "pomodewro-sound")
+        configuration.userContentController.add(self, name: "pomodewroNative")
 
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.uiDelegate = self
@@ -116,6 +121,193 @@ final class WebViewController: NSViewController, WKUIDelegate {
         panel.canChooseFiles = true
         panel.begin { response in
             completionHandler(response == .OK ? panel.urls : nil)
+        }
+    }
+
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard
+            message.name == "pomodewroNative",
+            let body = message.body as? [String: Any],
+            let type = body["type"] as? String
+        else { return }
+
+        switch type {
+        case "importSound":
+            importSound()
+        case "clearSounds":
+            clearStoredSounds()
+        default:
+            break
+        }
+    }
+
+    private func importSound() {
+        let panel = NSOpenPanel()
+        panel.title = "Choose a Pomodewro sound"
+        panel.prompt = "Add Sound"
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.allowedContentTypes = [
+            .audio,
+            UTType(filenameExtension: "mp3"),
+            UTType(filenameExtension: "m4a"),
+            UTType(filenameExtension: "aac"),
+            UTType(filenameExtension: "wav"),
+            UTType(filenameExtension: "aiff"),
+            UTType(filenameExtension: "aif"),
+            UTType(filenameExtension: "mp4")
+        ].compactMap { $0 }
+
+        panel.begin { [weak self] response in
+            guard let self else { return }
+            guard response == .OK, let sourceURL = panel.url else { return }
+
+            do {
+                let sound = try self.soundStore.importSound(from: sourceURL)
+                self.callJavaScriptCallback(
+                    "pomodewroNativeSoundImported",
+                    payload: ["id": sound.id, "name": sound.name, "url": sound.url]
+                )
+            } catch {
+                self.callJavaScriptCallback(
+                    "pomodewroNativeSoundImportFailed",
+                    payload: ["message": "Could not save sound"]
+                )
+            }
+        }
+    }
+
+    private func clearStoredSounds() {
+        do {
+            try soundStore.clear()
+            callJavaScriptCallback("pomodewroNativeSoundsCleared")
+        } catch {
+            callJavaScriptCallback(
+                "pomodewroNativeSoundImportFailed",
+                payload: ["message": "Could not clear audio"]
+            )
+        }
+    }
+
+    private func callJavaScriptCallback(_ name: String, payload: [String: String] = [:]) {
+        guard
+            JSONSerialization.isValidJSONObject(payload),
+            let data = try? JSONSerialization.data(withJSONObject: payload),
+            let json = String(data: data, encoding: .utf8)
+        else { return }
+
+        webView.evaluateJavaScript("window['\(name)'] && window['\(name)'](\(json));")
+    }
+}
+
+private struct NativeSound {
+    let id: String
+    let name: String
+    let url: String
+}
+
+private final class SoundStore {
+    private let fileManager = FileManager.default
+
+    private var directory: URL {
+        let baseURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        return baseURL.appendingPathComponent("Pomodewro/Sounds", isDirectory: true)
+    }
+
+    func importSound(from sourceURL: URL) throws -> NativeSound {
+        let hasSecurityAccess = sourceURL.startAccessingSecurityScopedResource()
+        defer {
+            if hasSecurityAccess {
+                sourceURL.stopAccessingSecurityScopedResource()
+            }
+        }
+
+        try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        let id = "native-sound-\(Int(Date().timeIntervalSince1970 * 1000))-\(UUID().uuidString.prefix(6).lowercased())"
+        let fileExtension = sourceURL.pathExtension.isEmpty ? "audio" : sourceURL.pathExtension.lowercased()
+        let destinationURL = directory.appendingPathComponent("\(id).\(fileExtension)")
+        if fileManager.fileExists(atPath: destinationURL.path) {
+            try fileManager.removeItem(at: destinationURL)
+        }
+        try fileManager.copyItem(at: sourceURL, to: destinationURL)
+
+        let rawName = sourceURL.deletingPathExtension().lastPathComponent
+        let name = String((rawName.isEmpty ? "Custom" : rawName).prefix(24))
+        return NativeSound(id: id, name: name, url: "pomodewro-sound://\(id)")
+    }
+
+    func clear() throws {
+        guard fileManager.fileExists(atPath: directory.path) else { return }
+        try fileManager.removeItem(at: directory)
+    }
+
+    func fileURL(for id: String) -> URL? {
+        guard id.range(of: #"^[A-Za-z0-9_-]+$"#, options: .regularExpression) != nil else { return nil }
+        guard let files = try? fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else { return nil }
+        return files.first { $0.deletingPathExtension().lastPathComponent == id }
+    }
+}
+
+private final class SoundSchemeHandler: NSObject, WKURLSchemeHandler {
+    private let store: SoundStore
+
+    init(store: SoundStore) {
+        self.store = store
+    }
+
+    func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+        guard let url = urlSchemeTask.request.url else {
+            fail(urlSchemeTask, message: "Missing sound URL")
+            return
+        }
+
+        let soundId = url.host ?? url.lastPathComponent
+        guard let fileURL = store.fileURL(for: soundId) else {
+            fail(urlSchemeTask, message: "Sound not found")
+            return
+        }
+
+        do {
+            let data = try Data(contentsOf: fileURL)
+            let response = URLResponse(
+                url: url,
+                mimeType: Self.mimeType(for: fileURL.pathExtension),
+                expectedContentLength: data.count,
+                textEncodingName: nil
+            )
+            urlSchemeTask.didReceive(response)
+            urlSchemeTask.didReceive(data)
+            urlSchemeTask.didFinish()
+        } catch {
+            fail(urlSchemeTask, message: "Could not read sound")
+        }
+    }
+
+    func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {}
+
+    private func fail(_ urlSchemeTask: WKURLSchemeTask, message: String) {
+        let error = NSError(
+            domain: AppConfig.appName,
+            code: 1,
+            userInfo: [NSLocalizedDescriptionKey: message]
+        )
+        urlSchemeTask.didFailWithError(error)
+    }
+
+    private static func mimeType(for fileExtension: String) -> String {
+        switch fileExtension.lowercased() {
+        case "mp3":
+            return "audio/mpeg"
+        case "m4a", "mp4", "aac":
+            return "audio/mp4"
+        case "wav":
+            return "audio/wav"
+        case "aif", "aiff":
+            return "audio/aiff"
+        default:
+            return "application/octet-stream"
         }
     }
 }

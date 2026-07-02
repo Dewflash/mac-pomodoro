@@ -1087,6 +1087,7 @@
         timerShade: 100,
         tint: 58,
         customSounds: [],
+        nativeSounds: [],
         customBackgrounds: [],
         history: []
       };
@@ -1164,6 +1165,16 @@
         } catch {
           showToast("Could not save settings");
         }
+      }
+
+      function nativeBridgeAvailable() {
+        return Boolean(window.webkit?.messageHandlers?.pomodewroNative);
+      }
+
+      function postNativeMessage(message) {
+        if (!nativeBridgeAvailable()) return false;
+        window.webkit.messageHandlers.pomodewroNative.postMessage(message);
+        return true;
       }
 
       function getModeDurationSeconds(mode) {
@@ -1256,7 +1267,7 @@
       }
 
       function renderSelects() {
-        const allSounds = [...builtInSounds, ...state.customSounds];
+        const allSounds = [...builtInSounds, ...state.customSounds, ...state.nativeSounds];
         const allBackgrounds = [...builtInBackgrounds, ...state.customBackgrounds];
 
         for (const select of [elements.focusSound, elements.breakSound]) {
@@ -1399,6 +1410,15 @@
           audio.play().catch(() => showToast("Tap once to enable audio"));
           return;
         }
+
+        const native = state.nativeSounds.find((sound) => sound.id === soundId);
+        if (native) {
+          const audio = new Audio(native.url);
+          audio.volume = 0.78;
+          audio.play().catch(() => showToast("Tap once to enable audio"));
+          return;
+        }
+
         playGeneratedChime(soundId);
       }
 
@@ -1522,6 +1542,45 @@
         }
       }
 
+      function requestSoundImport(target) {
+        selectedSoundTarget = target;
+        if (postNativeMessage({ type: "importSound", target })) {
+          return;
+        }
+        elements.soundInput.click();
+      }
+
+      window.pomodewroNativeSoundImported = (sound) => {
+        if (!sound || !sound.id || !sound.url) {
+          showToast("Could not save sound");
+          return;
+        }
+
+        const name = String(sound.name || "Custom").slice(0, 24);
+        const nativeSound = { id: String(sound.id), name, url: String(sound.url) };
+        state.nativeSounds = state.nativeSounds.filter((item) => item.id !== nativeSound.id);
+        state.nativeSounds.push(nativeSound);
+
+        if (selectedSoundTarget === "focus") state.selectedFocusSoundId = nativeSound.id;
+        else state.selectedBreakSoundId = nativeSound.id;
+
+        renderSelects();
+        saveState();
+        render();
+        showToast("Sound saved");
+      };
+
+      window.pomodewroNativeSoundImportFailed = (payload) => {
+        showToast(payload?.message || payload || "Could not save sound");
+      };
+
+      window.pomodewroNativeSoundsCleared = () => {
+        state.nativeSounds = [];
+        renderSelects();
+        saveState();
+        render();
+      };
+
       function recordFocusSession(seconds) {
         state.history.push({
           completedAt: new Date().toISOString(),
@@ -1644,8 +1703,10 @@
 
       function clearAudio() {
         state.customSounds = [];
+        state.nativeSounds = [];
         state.selectedFocusSoundId = "soft-bell";
         state.selectedBreakSoundId = "gentle-ping";
+        postNativeMessage({ type: "clearSounds" });
         renderSelects();
         saveState();
         render();
@@ -1758,14 +1819,8 @@
           saveState();
           render();
         });
-        elements.addFocusSound.addEventListener("click", () => {
-          selectedSoundTarget = "focus";
-          elements.soundInput.click();
-        });
-        elements.addBreakSound.addEventListener("click", () => {
-          selectedSoundTarget = "break";
-          elements.soundInput.click();
-        });
+        elements.addFocusSound.addEventListener("click", () => requestSoundImport("focus"));
+        elements.addBreakSound.addEventListener("click", () => requestSoundImport("break"));
         elements.clearAudio.addEventListener("click", clearAudio);
         elements.soundInput.addEventListener("change", () => {
           uploadFile(elements.soundInput.files[0], "sound");
@@ -1816,6 +1871,7 @@
       if (!fontStyles.some((style) => style.id === state.selectedFontStyle)) state.selectedFontStyle = "rounded";
       state.accentColor = normalizeHex(state.accentColor) || defaults.accentColor;
       state.customSounds = Array.isArray(state.customSounds) ? state.customSounds : [];
+      state.nativeSounds = Array.isArray(state.nativeSounds) ? state.nativeSounds : [];
       state.customBackgrounds = Array.isArray(state.customBackgrounds) ? state.customBackgrounds : [];
       const backgroundCount = state.customBackgrounds.length;
       state.customBackgrounds = state.customBackgrounds.filter((background) => {

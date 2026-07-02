@@ -8,7 +8,7 @@ Open `index.html` in a browser to preview it, or build the native menu bar app w
 /bin/zsh scripts/build-mac-app.sh
 ```
 
-The built app appears at `build/Pomodewro.app`. It bundles the HTML locally, so it does not need internet. Custom sounds and backgrounds are saved in local storage as Base64 strings, with uploads limited to 2 MB.
+The built app appears at `build/Pomodewro.app`. It bundles the HTML locally, so it does not need internet. In the native app, custom sounds are copied to local app storage so longer songs can be used. Browser preview still saves small custom sounds in local storage, with uploads limited to 2 MB.
 
 ## Features
 
@@ -16,7 +16,7 @@ The built app appears at `build/Pomodewro.app`. It bundles the HTML locally, so 
 - Native Mac menu bar wrapper with a monochrome tomato status icon
 - Pomodoro Cycle toggle that auto-switches Focus and Break sessions
 - Wide rectangular glassmorphism layout with a collapsible settings panel while running
-- Default Web Audio soft bell, plus separate custom Focus and Break chimes under 2 MB
+- Default Web Audio soft bell, plus separate custom Focus and Break chimes
 - Appearance tab with font presets, UI colour control, timer shade, wallpaper-style backgrounds, and cover cropping
 - Darkness/Tint slider for readability over uploaded images
 - Reset controls for custom audio and background settings
