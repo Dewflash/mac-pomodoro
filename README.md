@@ -1,6 +1,6 @@
-# Mac Pomodoro
+# Pomodewro
 
-A single-file Pomodoro Focus Timer designed for a wide Mac menu bar popover.
+A single-file Pomodoro focus timer designed for a wide Mac menu bar popover.
 
 Open `index.html` in a browser to use it. All CSS and JavaScript are embedded in the file. Custom sounds and backgrounds are saved in `localStorage` as Base64 strings, with uploads limited to 2 MB.
 
