@@ -1,12 +1,19 @@
 # Pomodewro
 
-A single-file Pomodoro focus timer designed for a wide Mac menu bar popover.
+A local Pomodoro focus timer designed for a compact Mac menu bar popover.
 
-Open `index.html` in a browser to use it. All CSS and JavaScript are embedded in the file. Custom sounds and backgrounds are saved in `localStorage` as Base64 strings, with uploads limited to 2 MB.
+Open `index.html` in a browser to preview it, or build the native menu bar app with:
+
+```sh
+/bin/zsh scripts/build-mac-app.sh
+```
+
+The built app appears at `build/Pomodewro.app`. It bundles the HTML locally, so it does not need internet. Custom sounds and backgrounds are saved in local storage as Base64 strings, with uploads limited to 2 MB.
 
 ## Features
 
 - Focus and break timer modes with play, pause, reset, and skip controls
+- Native Mac menu bar wrapper with a monochrome tomato status icon
 - Pomodoro Cycle toggle that auto-switches Focus and Break sessions
 - Wide rectangular glassmorphism layout with a collapsible settings panel while running
 - Default Web Audio soft bell, plus separate custom Focus and Break chimes
