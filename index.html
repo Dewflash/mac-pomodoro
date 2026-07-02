@@ -195,7 +195,7 @@
 
     .topbar {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 14px;
     }
@@ -225,13 +225,6 @@
       font-weight: 760;
       letter-spacing: 0;
       line-height: 1.05;
-    }
-
-    .subtitle {
-      margin: 3px 0 0;
-      color: rgba(255, 255, 255, 0.62);
-      font-size: 11px;
-      white-space: nowrap;
     }
 
     .settings-toggle {
@@ -269,6 +262,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 4px;
+      margin-top: 7px;
       padding: 4px;
       border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: 999px;
@@ -303,7 +297,7 @@
       align-self: stretch;
       display: grid;
       align-content: center;
-      gap: 12px;
+      gap: 18px;
     }
 
     .timer {
@@ -351,6 +345,7 @@
       display: flex;
       justify-content: center;
       gap: 26px;
+      margin-bottom: 12px;
     }
 
     .control-item {
@@ -732,7 +727,6 @@
             </div>
             <div>
               <h1>Pomodoro</h1>
-              <p class="subtitle">Focus better. Get more done.</p>
             </div>
           </div>
           <button class="settings-toggle" id="settingsButton" type="button" aria-label="Toggle settings" title="Settings">
