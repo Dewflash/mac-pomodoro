@@ -472,6 +472,7 @@
     }
 
     .settings-body {
+      min-height: 0;
       overflow-y: auto;
       padding: 10px 14px 12px;
       scrollbar-width: thin;
@@ -484,6 +485,10 @@
 
     .tab-page.active {
       display: block;
+    }
+
+    #historyPage.active {
+      height: 100%;
     }
 
     .section {
@@ -627,6 +632,16 @@
       padding-right: 2px;
       scrollbar-width: thin;
       scrollbar-color: rgba(78, 232, 220, 0.42) rgba(255, 255, 255, 0.08);
+    }
+
+    #historySection {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #historySection .action-row {
+      margin-top: auto;
     }
 
     .history-item {
