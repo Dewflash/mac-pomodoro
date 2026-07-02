@@ -922,6 +922,7 @@
                 <button class="add-button" id="addBreakSound" type="button">+ Add</button>
               </div>
               <button class="add-button" id="clearAudio" type="button">Clear Audio</button>
+              <p class="tip">Tip: use a short audio clip under 2 MB.</p>
             </section>
           </div>
 
@@ -1000,7 +1001,7 @@
   </main>
 
   <div class="toast-stack" id="toastStack" aria-live="polite"></div>
-  <input class="hidden-input" id="soundInput" type="file" accept="audio/*">
+  <input class="hidden-input" id="soundInput" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.mp4">
   <input class="hidden-input" id="backgroundInput" type="file" accept="image/*">
 
   <script>
@@ -1486,7 +1487,7 @@
         if (!file) return;
 
         if (kind === "sound" && file.size > MAX_SOUND_FILE_SIZE) {
-          showToast("Sound too large");
+          showToast("Sound must be under 2 MB");
           return;
         }
 
