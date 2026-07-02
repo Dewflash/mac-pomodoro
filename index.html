@@ -491,6 +491,14 @@
       scrollbar-color: rgba(78, 232, 220, 0.42) rgba(255, 255, 255, 0.08);
     }
 
+    .tab-page {
+      display: none;
+    }
+
+    .tab-page.active {
+      display: block;
+    }
+
     .section {
       display: grid;
       gap: 7px;
@@ -814,83 +822,89 @@
           </button>
         </div>
 
-        <div class="settings-body">
-          <section class="section" id="timerSection">
-            <p class="section-title">Durations</p>
-            <div class="two-col">
-              <div class="field">
-                <label for="focusMinutes">Focus (min)</label>
-                <div class="stepper">
-                  <button class="step-button" id="focusMinus" type="button" aria-label="Decrease focus minutes">−</button>
-                  <input id="focusMinutes" type="number" min="1" max="180" step="1" value="25">
-                  <button class="step-button" id="focusPlus" type="button" aria-label="Increase focus minutes">+</button>
+        <div class="settings-body" id="settingsBody">
+          <div class="tab-page active" id="timerPage">
+            <section class="section" id="timerSection">
+              <p class="section-title">Durations</p>
+              <div class="two-col">
+                <div class="field">
+                  <label for="focusMinutes">Focus (min)</label>
+                  <div class="stepper">
+                    <button class="step-button" id="focusMinus" type="button" aria-label="Decrease focus minutes">−</button>
+                    <input id="focusMinutes" type="number" min="1" max="180" step="1" value="25">
+                    <button class="step-button" id="focusPlus" type="button" aria-label="Increase focus minutes">+</button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="breakMinutes">Break (min)</label>
+                  <div class="stepper">
+                    <button class="step-button" id="breakMinus" type="button" aria-label="Decrease break minutes">−</button>
+                    <input id="breakMinutes" type="number" min="1" max="180" step="1" value="5">
+                    <button class="step-button" id="breakPlus" type="button" aria-label="Increase break minutes">+</button>
+                  </div>
                 </div>
               </div>
+            </section>
+
+            <section class="section">
+              <p class="section-title">Sounds</p>
+              <div class="sound-row">
+                <div class="field">
+                  <label for="focusSound">Focus Chime</label>
+                  <select id="focusSound"></select>
+                </div>
+                <button class="add-button" id="addFocusSound" type="button">+ Add</button>
+              </div>
+              <div class="sound-row">
+                <div class="field">
+                  <label for="breakSound">Break Chime</label>
+                  <select id="breakSound"></select>
+                </div>
+                <button class="add-button" id="addBreakSound" type="button">+ Add</button>
+              </div>
+              <button class="add-button" id="clearAudio" type="button">Clear Audio</button>
+            </section>
+          </div>
+
+          <div class="tab-page" id="backgroundPage">
+            <section class="section" id="backgroundSection">
+              <p class="section-title">Background</p>
+              <div class="background-row">
+                <div class="field">
+                  <label for="backgroundSelect">Image</label>
+                  <select id="backgroundSelect"></select>
+                </div>
+                <button class="add-button" id="uploadBackground" type="button">Upload</button>
+              </div>
               <div class="field">
-                <label for="breakMinutes">Break (min)</label>
-                <div class="stepper">
-                  <button class="step-button" id="breakMinus" type="button" aria-label="Decrease break minutes">−</button>
-                  <input id="breakMinutes" type="number" min="1" max="180" step="1" value="5">
-                  <button class="step-button" id="breakPlus" type="button" aria-label="Increase break minutes">+</button>
+                <label for="tintSlider">Darkness / Tint <span id="tintValue">58%</span></label>
+                <input id="tintSlider" type="range" min="25" max="82" value="58">
+              </div>
+              <button class="add-button" id="resetBackground" type="button">Reset Background</button>
+              <p class="tip">Tip: upload your own image for a personal vibe.</p>
+            </section>
+          </div>
+
+          <div class="tab-page" id="historyPage">
+            <section class="section" id="historySection">
+              <p class="section-title">History</p>
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <p class="stat-value" id="weekHours">0.0h</p>
+                  <p class="stat-label">Past week focus</p>
+                </div>
+                <div class="stat-card">
+                  <p class="stat-value" id="weekSessions">0</p>
+                  <p class="stat-label">Sessions</p>
                 </div>
               </div>
-            </div>
-          </section>
-
-          <section class="section">
-            <p class="section-title">Sounds</p>
-            <div class="sound-row">
-              <div class="field">
-                <label for="focusSound">Focus Chime</label>
-                <select id="focusSound"></select>
+              <div class="history-list" id="historyList"></div>
+              <div class="action-row">
+                <button class="add-button" id="copyHistoryJson" type="button">Copy JSON</button>
+                <button class="add-button" id="clearHistory" type="button">Clear History</button>
               </div>
-              <button class="add-button" id="addFocusSound" type="button">+ Add</button>
-            </div>
-            <div class="sound-row">
-              <div class="field">
-                <label for="breakSound">Break Chime</label>
-                <select id="breakSound"></select>
-              </div>
-              <button class="add-button" id="addBreakSound" type="button">+ Add</button>
-            </div>
-            <button class="add-button" id="clearAudio" type="button">Clear Audio</button>
-          </section>
-
-          <section class="section" id="backgroundSection">
-            <p class="section-title">Background</p>
-            <div class="background-row">
-              <div class="field">
-                <label for="backgroundSelect">Image</label>
-                <select id="backgroundSelect"></select>
-              </div>
-              <button class="add-button" id="uploadBackground" type="button">Upload</button>
-            </div>
-            <div class="field">
-              <label for="tintSlider">Darkness / Tint <span id="tintValue">58%</span></label>
-              <input id="tintSlider" type="range" min="25" max="82" value="58">
-            </div>
-            <button class="add-button" id="resetBackground" type="button">Reset Background</button>
-            <p class="tip">Tip: upload your own image for a personal vibe.</p>
-          </section>
-
-          <section class="section" id="historySection">
-            <p class="section-title">History</p>
-            <div class="stats-grid">
-              <div class="stat-card">
-                <p class="stat-value" id="weekHours">0.0h</p>
-                <p class="stat-label">Past week focus</p>
-              </div>
-              <div class="stat-card">
-                <p class="stat-value" id="weekSessions">0</p>
-                <p class="stat-label">Sessions</p>
-              </div>
-            </div>
-            <div class="history-list" id="historyList"></div>
-            <div class="action-row">
-              <button class="add-button" id="copyHistoryJson" type="button">Copy JSON</button>
-              <button class="add-button" id="clearHistory" type="button">Clear History</button>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
       </aside>
     </section>
@@ -909,6 +923,8 @@
       const elements = {
         shell: document.getElementById("shell"),
         app: document.getElementById("app"),
+        settingsPanel: document.getElementById("settingsPanel"),
+        settingsBody: document.getElementById("settingsBody"),
         settingsButton: document.getElementById("settingsButton"),
         timerDisplay: document.getElementById("timerDisplay"),
         durationLabel: document.getElementById("durationLabel"),
@@ -941,6 +957,9 @@
         timerTab: document.getElementById("timerTab"),
         backgroundTab: document.getElementById("backgroundTab"),
         historyTab: document.getElementById("historyTab"),
+        timerPage: document.getElementById("timerPage"),
+        backgroundPage: document.getElementById("backgroundPage"),
+        historyPage: document.getElementById("historyPage"),
         timerSection: document.getElementById("timerSection"),
         backgroundSection: document.getElementById("backgroundSection"),
         historySection: document.getElementById("historySection"),
@@ -1378,6 +1397,10 @@
         elements.timerTab.classList.toggle("active", tab === "timer");
         elements.backgroundTab.classList.toggle("active", tab === "background");
         elements.historyTab.classList.toggle("active", tab === "history");
+        elements.timerPage.classList.toggle("active", tab === "timer");
+        elements.backgroundPage.classList.toggle("active", tab === "background");
+        elements.historyPage.classList.toggle("active", tab === "history");
+        elements.settingsBody.scrollTop = 0;
       }
 
       function showToast(message) {
@@ -1467,15 +1490,12 @@
 
         elements.timerTab.addEventListener("click", () => {
           setActiveTab("timer");
-          elements.timerSection.scrollIntoView({ behavior: "smooth", block: "start" });
         });
         elements.backgroundTab.addEventListener("click", () => {
           setActiveTab("background");
-          elements.backgroundSection.scrollIntoView({ behavior: "smooth", block: "start" });
         });
         elements.historyTab.addEventListener("click", () => {
           setActiveTab("history");
-          elements.historySection.scrollIntoView({ behavior: "smooth", block: "start" });
         });
         elements.copyHistoryJson.addEventListener("click", copyHistoryJson);
         elements.clearHistory.addEventListener("click", clearHistory);
