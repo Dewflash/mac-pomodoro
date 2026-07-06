@@ -1104,6 +1104,7 @@
       const defaults = {
         mode: "focus",
         isRunning: false,
+        targetEndTime: 0,
         cycleEnabled: true,
         focusMinutes: 25,
         breakMinutes: 5,
@@ -1190,9 +1191,10 @@
       }
 
       function saveState() {
-        const restSeconds = state.isRunning ? Math.max(0, Math.ceil((targetEndTime - Date.now()) / 1000)) : remainingSeconds;
+        const isRunning = Boolean(state.isRunning && targetEndTime > 0);
+        const restSeconds = isRunning ? Math.max(0, Math.ceil((targetEndTime - Date.now()) / 1000)) : remainingSeconds;
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...state, isRunning: false, remainingSeconds: restSeconds }));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...state, isRunning, remainingSeconds: restSeconds, targetEndTime: isRunning ? targetEndTime : 0 }));
         } catch {
           showToast("Could not save settings");
         }
@@ -1266,14 +1268,14 @@
       function render() {
         const duration = getModeDurationSeconds(state.mode);
         const progress = duration > 0 ? Math.max(0, Math.min(100, (remainingSeconds / duration) * 100)) : 0;
-        const settingsOpen = !state.isRunning || state.settingsOpen;
+        const settingsOpen = state.settingsOpen !== false;
 
         elements.timerDisplay.textContent = formatTime(remainingSeconds);
         elements.durationLabel.textContent = formatTime(duration);
         elements.shell.style.setProperty("--progress", `${progress}%`);
         elements.shell.classList.toggle("focus-mode", !settingsOpen);
         elements.app.classList.toggle("focus-mode", !settingsOpen);
-        elements.settingsButton.classList.toggle("active", settingsOpen && state.isRunning);
+        elements.settingsButton.classList.toggle("active", settingsOpen);
         elements.focusModeButton.classList.toggle("active", state.mode === "focus");
         elements.breakModeButton.classList.toggle("active", state.mode === "break");
         elements.cycleToggle.classList.toggle("on", state.cycleEnabled);
@@ -1372,10 +1374,12 @@
 
       function startTimer() {
         if (state.isRunning) return;
+        if (remainingSeconds <= 0) remainingSeconds = getModeDurationSeconds(state.mode);
         state.isRunning = true;
         state.settingsOpen = false;
         targetEndTime = Date.now() + remainingSeconds * 1000;
         timerId = window.setInterval(tick, 250);
+        saveState();
         tick();
       }
 
@@ -1413,17 +1417,20 @@
         timerId = null;
         state.isRunning = false;
         if (completedMode === "focus") recordFocusSession(completedSeconds);
-        playSelectedSound(completedMode);
+        try {
+          playSelectedSound(completedMode);
+        } catch {
+          showToast("Could not play alarm");
+        }
         showToast(completedMode === "focus" ? "Focus complete" : "Break complete");
 
         if (state.cycleEnabled) {
           state.mode = completedMode === "focus" ? "break" : "focus";
           remainingSeconds = getModeDurationSeconds(state.mode);
           state.settingsOpen = false;
+          saveState();
           render();
-          window.setTimeout(() => {
-            if (!state.isRunning && state.cycleEnabled) startTimer();
-          }, 1000);
+          startTimer();
         } else {
           state.settingsOpen = true;
           remainingSeconds = getModeDurationSeconds(state.mode);
@@ -1846,7 +1853,8 @@
 
       function attachEvents() {
         elements.settingsButton.addEventListener("click", () => {
-          state.settingsOpen = state.isRunning ? !state.settingsOpen : true;
+          state.settingsOpen = !state.settingsOpen;
+          saveState();
           render();
         });
 
@@ -1951,6 +1959,42 @@
         elements.clearHistory.addEventListener("click", clearHistory);
 
         window.addEventListener("beforeunload", saveState);
+        window.addEventListener("focus", refreshTimer);
+        window.addEventListener("pageshow", refreshTimer);
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) refreshTimer();
+        });
+      }
+
+      function refreshTimer() {
+        if (state.isRunning) {
+          tick();
+          return;
+        }
+        render();
+      }
+
+      function restoreRunningTimer() {
+        targetEndTime = Number(state.targetEndTime) || 0;
+        if (!state.isRunning || targetEndTime <= 0) {
+          state.isRunning = false;
+          targetEndTime = 0;
+          state.settingsOpen = true;
+          remainingSeconds = Math.min(remainingSeconds, getModeDurationSeconds(state.mode));
+          return false;
+        }
+
+        remainingSeconds = Math.max(0, Math.ceil((targetEndTime - Date.now()) / 1000));
+        state.settingsOpen = false;
+        if (remainingSeconds <= 0) {
+          completeTimer();
+          return true;
+        }
+
+        timerId = window.setInterval(tick, 250);
+        saveState();
+        tick();
+        return true;
       }
 
       state.focusMinutes = clampMinutes(state.focusMinutes, 25);
@@ -1971,12 +2015,11 @@
         saveState();
       }
       state.history = Array.isArray(state.history) ? state.history : [];
-      state.settingsOpen = true;
-      remainingSeconds = Math.min(remainingSeconds, getModeDurationSeconds(state.mode));
+      window.pomodewroRefreshTimer = refreshTimer;
 
       renderSelects();
       attachEvents();
-      render();
+      if (!restoreRunningTimer()) render();
     })();
   </script>
 </body>

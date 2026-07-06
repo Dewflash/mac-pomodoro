@@ -7,11 +7,12 @@ CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 ICONSET_DIR="${TMPDIR:-/tmp}/Pomodewro.iconset"
+ICON_SOURCE="$ROOT_DIR/assets/app-icon-source.jpg"
 
 mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 
 rm -rf "$ICONSET_DIR"
-swift "$ROOT_DIR/scripts/render-app-icon.swift" "$ICONSET_DIR"
+swift "$ROOT_DIR/scripts/render-app-icon.swift" "$ICONSET_DIR" "$ICON_SOURCE"
 iconutil -c icns "$ICONSET_DIR" -o "$RESOURCES_DIR/Pomodewro.icns"
 rm -rf "$ICONSET_DIR"
 

@@ -1,0 +1,25 @@
+Pomodewro 1.0 Install Notes
+
+This is an unsigned indie Mac build. The app works offline and does not need internet.
+
+DMG install:
+1. Open Pomodewro-1.0.dmg.
+2. Drag Pomodewro.app to the Applications shortcut.
+3. Eject the Pomodewro disk image.
+4. Open Pomodewro from Applications.
+
+ZIP install:
+1. Unzip Pomodewro-1.0.zip.
+2. Drag Pomodewro.app to Applications.
+3. Open Pomodewro from Applications.
+
+If macOS blocks first launch:
+1. Right-click Pomodewro.app.
+2. Choose Open.
+3. Click Open again if macOS asks you to confirm.
+
+Notes:
+- Opening the app directly from the DMG or unzipped folder is okay for quick testing.
+- Dragging to Applications is better for normal daily use.
+- Pomodewro is local/offline and does not send data anywhere.
+- Custom sounds are stored on your Mac under Application Support.

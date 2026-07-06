@@ -54,6 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             webViewController.loadIfNeeded()
             popover.show(relativeTo: sender.bounds, of: sender, preferredEdge: .minY)
+            webViewController.refreshTimer()
         }
     }
 
@@ -107,6 +108,13 @@ final class WebViewController: NSViewController, WKUIDelegate, WKScriptMessageHa
         }
 
         webView.loadFileURL(url, allowingReadAccessTo: htmlURL.deletingLastPathComponent())
+    }
+
+    func refreshTimer() {
+        webView.evaluateJavaScript("window.pomodewroRefreshTimer && window.pomodewroRefreshTimer();")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self] in
+            self?.webView.evaluateJavaScript("window.pomodewroRefreshTimer && window.pomodewroRefreshTimer();")
+        }
     }
 
     func webView(

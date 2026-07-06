@@ -3,6 +3,133 @@ import AppKit
 
 let outputURL = URL(fileURLWithPath: CommandLine.arguments.dropFirst().first ?? "Pomodewro.iconset")
 try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectories: true)
+let sourceImageURL = CommandLine.arguments.dropFirst(2).first.map(URL.init(fileURLWithPath:))
+let sourceImage = sourceImageURL.flatMap(NSImage.init(contentsOf:))
+var cachedSourceCropRect: NSRect?
+
+func isWhiteCanvas(_ color: NSColor) -> Bool {
+    guard color.alphaComponent > 0.95 else { return false }
+    guard let rgbColor = color.usingColorSpace(.deviceRGB) else { return false }
+    return rgbColor.redComponent > 0.94
+        && rgbColor.greenComponent > 0.94
+        && rgbColor.blueComponent > 0.94
+}
+
+func contentCropRect(for image: NSImage) -> NSRect {
+    if let cachedSourceCropRect {
+        return cachedSourceCropRect
+    }
+
+    guard
+        let tiffData = image.tiffRepresentation,
+        let bitmap = NSBitmapImageRep(data: tiffData)
+    else {
+        return NSRect(origin: .zero, size: image.size)
+    }
+
+    let width = bitmap.pixelsWide
+    let height = bitmap.pixelsHigh
+    var minX = width
+    var minY = height
+    var maxX = 0
+    var maxY = 0
+
+    for y in 0..<height {
+        for x in 0..<width {
+            guard let color = bitmap.colorAt(x: x, y: y) else { continue }
+            if !isWhiteCanvas(color) {
+                minX = min(minX, x)
+                minY = min(minY, y)
+                maxX = max(maxX, x)
+                maxY = max(maxY, y)
+            }
+        }
+    }
+
+    guard minX <= maxX, minY <= maxY else {
+        return NSRect(origin: .zero, size: image.size)
+    }
+
+    let cropRect = NSRect(
+        x: CGFloat(minX),
+        y: CGFloat(minY),
+        width: CGFloat(maxX - minX + 1),
+        height: CGFloat(maxY - minY + 1)
+    )
+    cachedSourceCropRect = cropRect
+    return cropRect
+}
+
+func clearEdgeConnectedWhiteCanvas(in bitmap: NSBitmapImageRep) {
+    let width = bitmap.pixelsWide
+    let height = bitmap.pixelsHigh
+    let samplesPerPixel = bitmap.samplesPerPixel
+    guard
+        width > 0,
+        height > 0,
+        bitmap.bitsPerSample == 8,
+        samplesPerPixel >= 4,
+        let data = bitmap.bitmapData
+    else {
+        return
+    }
+
+    var visited = Array(repeating: false, count: width * height)
+    var stack: [Int] = []
+    let bytesPerRow = bitmap.bytesPerRow
+
+    func index(_ x: Int, _ y: Int) -> Int {
+        y * width + x
+    }
+
+    func byteOffset(_ x: Int, _ y: Int) -> Int {
+        y * bytesPerRow + x * samplesPerPixel
+    }
+
+    func isCanvasPixel(_ x: Int, _ y: Int) -> Bool {
+        let offset = byteOffset(x, y)
+        return data[offset + 3] > 242
+            && data[offset] > 240
+            && data[offset + 1] > 240
+            && data[offset + 2] > 240
+    }
+
+    func clearPixel(_ x: Int, _ y: Int) {
+        let offset = byteOffset(x, y)
+        data[offset] = 0
+        data[offset + 1] = 0
+        data[offset + 2] = 0
+        data[offset + 3] = 0
+    }
+
+    func enqueueIfCanvas(_ x: Int, _ y: Int) {
+        guard x >= 0, x < width, y >= 0, y < height else { return }
+        let position = index(x, y)
+        guard !visited[position], isCanvasPixel(x, y) else { return }
+        visited[position] = true
+        stack.append(position)
+    }
+
+    for x in 0..<width {
+        enqueueIfCanvas(x, 0)
+        enqueueIfCanvas(x, height - 1)
+    }
+    for y in 0..<height {
+        enqueueIfCanvas(0, y)
+        enqueueIfCanvas(width - 1, y)
+    }
+
+    while let position = stack.popLast() {
+        let x = position % width
+        let y = position / width
+        clearPixel(x, y)
+
+        enqueueIfCanvas(x + 1, y)
+        enqueueIfCanvas(x - 1, y)
+        enqueueIfCanvas(x, y + 1)
+        enqueueIfCanvas(x, y - 1)
+    }
+}
 
 func color(_ hex: UInt32, alpha: CGFloat = 1) -> NSColor {
     NSColor(
@@ -47,6 +174,24 @@ func drawIcon(pixelSize: Int, to url: URL) throws {
 
     NSColor.clear.setFill()
     NSRect(x: 0, y: 0, width: 1024, height: 1024).fill()
+
+    if let sourceImage {
+        sourceImage.draw(
+            in: NSRect(x: 0, y: 0, width: 1024, height: 1024),
+            from: contentCropRect(for: sourceImage),
+            operation: .copy,
+            fraction: 1
+        )
+        context.flushGraphics()
+        clearEdgeConnectedWhiteCanvas(in: bitmap)
+        NSGraphicsContext.restoreGraphicsState()
+
+        guard let data = bitmap.representation(using: .png, properties: [:]) else {
+            throw NSError(domain: "PomodewroIcon", code: 3)
+        }
+        try data.write(to: url)
+        return
+    }
 
     let base = roundedRect(x: 66, y: 66, width: 892, height: 892, radius: 218)
     let shadow = NSShadow()
