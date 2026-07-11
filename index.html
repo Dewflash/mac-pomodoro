@@ -1710,6 +1710,10 @@
       box-shadow: none;
     }
 
+    html[data-theme="mac-native"] .timer {
+      transform: translateY(-8px);
+    }
+
     html[data-theme="mac-native"] .progress-wrap {
       transform: translateY(5px);
     }
@@ -1834,7 +1838,7 @@
   </style>
 </head>
 <body>
-  <main class="shell" id="shell" style="--progress: 100%; --tint: 0.58;">
+  <main class="shell" id="shell" style="--progress: 100%; --tint: 0.00;">
     <div class="tint" aria-hidden="true"></div>
     <section class="app" id="app" aria-label="Pomodewro timer">
       <div class="main">
@@ -2018,8 +2022,8 @@
                 <button class="add-button" id="uploadBackground" type="button">Upload</button>
               </div>
               <div class="field">
-                <label for="tintSlider">Backdrop contrast <span id="tintValue">58%</span></label>
-                <input id="tintSlider" type="range" min="0" max="100" value="58">
+                <label for="tintSlider">Backdrop contrast <span id="tintValue">0%</span></label>
+                <input id="tintSlider" type="range" min="0" max="100" value="0">
               </div>
               <p class="tip">Backdrop contrast handles image darkness and timer readability together.</p>
             </section>
@@ -2180,7 +2184,7 @@
         surfaceTone: 0,
         selectedFontStyle: "rounded",
         accentColor: "#b38bff",
-        tint: 58,
+        tint: 0,
         customSounds: [],
         nativeSounds: [],
         customBackgrounds: [],
@@ -3207,7 +3211,7 @@
         state.surfaceTone = defaults.surfaceTone;
         state.selectedFontStyle = "rounded";
         state.accentColor = defaults.accentColor;
-        state.tint = 58;
+        state.tint = defaults.tint;
         renderSelects();
         saveState();
         render();
@@ -3393,7 +3397,7 @@
       state.focusMinutes = clampMinutes(state.focusMinutes, 25);
       state.breakMinutes = clampMinutes(state.breakMinutes, 5);
       const storedTint = Number(state.tint);
-      state.tint = Number.isFinite(storedTint) ? Math.min(100, Math.max(0, storedTint)) : 58;
+      state.tint = Number.isFinite(storedTint) ? Math.min(100, Math.max(0, storedTint)) : defaults.tint;
       delete state.timerShade;
       state.selectedThemeId = legacyThemeIds[state.selectedThemeId] || state.selectedThemeId;
       if (!themePresets.some((theme) => theme.id === state.selectedThemeId)) state.selectedThemeId = defaults.selectedThemeId;
