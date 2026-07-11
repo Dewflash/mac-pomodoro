@@ -1750,6 +1750,32 @@
       transform: translateY(1px);
     }
 
+    /* Settings visibility may change width, never the timer stack's vertical geometry. */
+    html .app .main,
+    html .app.focus-mode .main {
+      grid-template-rows: auto auto var(--material-timer-height) auto auto;
+      align-content: space-between;
+      gap: 9px;
+    }
+
+    html .app .mode-switch,
+    html .app.focus-mode .mode-switch {
+      margin-top: 0;
+    }
+
+    html .app .timer-zone,
+    html .app.focus-mode .timer-zone {
+      height: var(--material-timer-height);
+      align-self: center;
+      transform: none;
+    }
+
+    html .app .control-row,
+    html .app.focus-mode .control-row {
+      margin: 0;
+      transform: none;
+    }
+
     html[data-theme="mac-native"] .section,
     html[data-theme="field-notes"] .section,
     html[data-theme="winter-almanac"] .section,
