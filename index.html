@@ -20,6 +20,18 @@
       --line: rgba(255, 255, 255, 0.16);
       --panel: rgba(9, 12, 18, 0.58);
       --panel-strong: rgba(10, 12, 18, 0.74);
+      --canvas: #050711;
+      --theme-glow-a: rgba(78, 232, 220, 0.18);
+      --theme-glow-b: rgba(129, 140, 248, 0.16);
+      --settings-bg: rgba(9, 11, 17, 0.66);
+      --control-bg: rgba(5, 8, 14, 0.58);
+      --control-border: rgba(255, 255, 255, 0.14);
+      --surface-card: rgba(255, 255, 255, 0.075);
+      --surface-subtle: rgba(255, 255, 255, 0.045);
+      --divider: rgba(255, 255, 255, 0.12);
+      --shell-radius: 9px;
+      --control-radius: 9px;
+      --material-blur: 24px;
       --shadow: 0 28px 90px rgba(0, 0, 0, 0.58);
       --app-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       --timer-font: var(--app-font);
@@ -48,9 +60,9 @@
       place-items: center;
       padding: 16px;
       background:
-        radial-gradient(circle at 12% 12%, rgba(var(--accent-rgb), 0.18), transparent 30%),
-        radial-gradient(circle at 84% 20%, rgba(129, 140, 248, 0.16), transparent 28%),
-        #050711;
+        radial-gradient(circle at 12% 12%, var(--theme-glow-a), transparent 30%),
+        radial-gradient(circle at 84% 20%, var(--theme-glow-b), transparent 28%),
+        var(--canvas);
       color: var(--text);
       font-family: var(--app-font);
     }
@@ -58,6 +70,8 @@
     html.native-popover body {
       transform: scale(var(--native-popover-scale));
       transform-origin: top left;
+      padding: 0;
+      background: var(--canvas);
     }
 
     button,
@@ -149,8 +163,8 @@
       max-height: 438px;
       position: relative;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: 9px;
+      border: 1px solid var(--control-border);
+      border-radius: var(--shell-radius);
       background-image: var(--background-image);
       background-position: center;
       background-size: cover;
@@ -159,10 +173,13 @@
     }
 
     html.native-popover .shell {
-      width: 750px;
-      height: 438px;
-      min-height: 438px;
-      max-height: 438px;
+      width: 800px;
+      height: 490px;
+      min-height: 490px;
+      max-height: 490px;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
     }
 
     .tint {
@@ -197,7 +214,6 @@
       grid-template-rows: auto auto minmax(0, 1fr) auto auto;
       gap: 9px;
       padding: 20px 22px 14px;
-      border-right: 1px solid rgba(255, 255, 255, 0.12);
       background: linear-gradient(
         90deg,
         rgba(6, 9, 18, var(--timer-panel-start-opacity, 0.18)),
@@ -214,10 +230,10 @@
       display: grid;
       grid-template-rows: auto minmax(0, 1fr);
       overflow: hidden;
-      border-left: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(9, 11, 17, 0.66);
-      -webkit-backdrop-filter: blur(24px) saturate(1.15);
-      backdrop-filter: blur(24px) saturate(1.15);
+      border-left: 1px solid var(--divider);
+      background: var(--settings-bg);
+      -webkit-backdrop-filter: blur(var(--material-blur)) saturate(1.15);
+      backdrop-filter: blur(var(--material-blur)) saturate(1.15);
       transition: opacity 220ms ease, transform 260ms ease;
     }
 
@@ -687,10 +703,9 @@
 
     .stat-card {
       min-width: 0;
-      padding: 9px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 11px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.07);
+      background: var(--surface-card);
     }
 
     .stat-value {
@@ -708,17 +723,6 @@
       white-space: nowrap;
     }
 
-    .history-list {
-      display: grid;
-      flex: 1;
-      gap: 6px;
-      min-height: 0;
-      overflow-y: auto;
-      padding-right: 2px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(var(--accent-rgb), 0.42) rgba(255, 255, 255, 0.08);
-    }
-
     #historySection {
       min-height: 100%;
       display: flex;
@@ -729,31 +733,154 @@
       margin-top: auto;
     }
 
-    .history-item {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
+    .history-heading,
+    .history-chart-heading,
+    .history-insight {
+      display: flex;
       align-items: center;
-      padding: 7px 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
+      justify-content: space-between;
+      gap: 8px;
     }
 
-    .history-day {
+    .history-period,
+    .history-chart-title,
+    .history-chart-average,
+    .history-insight-label,
+    .history-insight-value {
+      margin: 0;
+    }
+
+    .history-period {
+      margin-top: 2px;
+      color: rgba(255, 255, 255, 0.48);
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .history-chart-card {
+      padding: 10px 10px 8px;
+      border-radius: 11px;
+      background: var(--surface-card);
+    }
+
+    .history-chart-heading {
+      margin-bottom: 8px;
+    }
+
+    .history-chart-title {
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 10px;
+      font-weight: 720;
+    }
+
+    .history-chart-average {
+      color: var(--accent);
+      font-size: 9px;
+      font-weight: 720;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .history-chart-layout {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      gap: 6px;
+    }
+
+    .history-chart-scale {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 84px;
+      color: rgba(255, 255, 255, 0.36);
+      font-size: 8px;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .history-chart {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .history-bar-column {
+      display: grid;
+      grid-template-rows: 84px 13px;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .history-bar-track {
+      display: flex;
+      align-items: flex-end;
       min-width: 0;
       overflow: hidden;
-      color: rgba(255, 255, 255, 0.86);
-      font-size: 11px;
-      font-weight: 720;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 5px 5px 2px 2px;
+      background: linear-gradient(to top, rgba(255, 255, 255, 0.055), transparent 72%);
+    }
+
+    .history-bar-fill {
+      width: 100%;
+      height: var(--bar-height, 0%);
+      min-height: 0;
+      border-radius: 4px 4px 1px 1px;
+      background: linear-gradient(to top, var(--accent-strong), var(--accent));
+      box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.2);
+    }
+
+    .history-bar-fill.is-empty {
+      opacity: 0;
+    }
+
+    .history-bar-label {
+      overflow: hidden;
+      color: rgba(255, 255, 255, 0.46);
+      font-size: 8px;
+      font-weight: 650;
+      text-align: center;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    .history-bar-column.is-today .history-bar-label {
+      color: var(--accent);
+    }
+
+    .history-insights {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .history-insight {
+      min-width: 0;
+      padding: 8px 9px;
+      border-radius: 9px;
+      background: var(--surface-subtle);
+    }
+
+    .history-insight-label {
+      min-width: 0;
+      overflow: hidden;
+      color: rgba(255, 255, 255, 0.48);
+      font-size: 8px;
+      font-weight: 650;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .history-meta {
-      color: rgba(255, 255, 255, 0.58);
-      font-size: 10px;
+    .history-insight-value {
+      min-width: 0;
+      overflow: hidden;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 9px;
+      font-weight: 720;
       font-variant-numeric: tabular-nums;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
@@ -785,6 +912,45 @@
       font-size: 12px;
       text-align: center;
       animation: toast-in 220ms ease both;
+    }
+
+    select,
+    input[type="number"],
+    .hex-input,
+    .stepper {
+      border-color: var(--control-border);
+      border-radius: var(--control-radius);
+      background: var(--control-bg);
+    }
+
+    .settings-toggle,
+    .mode-switch,
+    .icon-round,
+    .cycle-card,
+    .switch {
+      border-color: var(--control-border);
+    }
+
+    .settings-toggle,
+    .mode-switch,
+    .icon-round,
+    .cycle-card,
+    .step-button {
+      background-color: var(--surface-subtle);
+    }
+
+    .settings-toggle,
+    .mode-switch,
+    .cycle-card,
+    .add-button {
+      border-radius: var(--control-radius);
+    }
+
+    .tabs,
+    .section,
+    .progress-track,
+    .history-bar-track {
+      border-color: var(--divider);
     }
 
     @keyframes toast-in {
@@ -955,6 +1121,19 @@
 
           <div class="tab-page" id="appearancePage">
             <section class="section" id="appearanceSection">
+              <p class="section-title">Theme</p>
+              <div class="field">
+                <label for="themeStyle">Material preset</label>
+                <select id="themeStyle"></select>
+              </div>
+              <div class="field">
+                <label for="surfaceTone">Surface tone <span id="surfaceToneValue">Balanced</span></label>
+                <input id="surfaceTone" type="range" min="-20" max="20" value="0">
+              </div>
+              <p class="tip">Themes change surfaces, contrast, corners, blur, and shadow. Accent stays independent.</p>
+            </section>
+
+            <section class="section">
               <p class="section-title">Style</p>
               <div class="field">
                 <label for="fontStyle">Font Style</label>
@@ -1004,18 +1183,45 @@
 
           <div class="tab-page" id="historyPage">
             <section class="section" id="historySection">
-              <p class="section-title">History</p>
+              <div class="history-heading">
+                <div>
+                  <p class="section-title">Focus report</p>
+                  <p class="history-period">Past 7 days</p>
+                </div>
+              </div>
               <div class="stats-grid">
                 <div class="stat-card">
                   <p class="stat-value" id="weekHours">0.0h</p>
-                  <p class="stat-label">Past week focus</p>
+                  <p class="stat-label">Focus time</p>
                 </div>
                 <div class="stat-card">
                   <p class="stat-value" id="weekSessions">0</p>
                   <p class="stat-label">Sessions</p>
                 </div>
               </div>
-              <div class="history-list" id="historyList"></div>
+              <div class="history-chart-card">
+                <div class="history-chart-heading">
+                  <p class="history-chart-title">Daily focus</p>
+                  <p class="history-chart-average" id="historyAverage">0m avg</p>
+                </div>
+                <div class="history-chart-layout">
+                  <div class="history-chart-scale" aria-hidden="true">
+                    <span id="historyChartMax">0m</span>
+                    <span>0</span>
+                  </div>
+                  <div class="history-chart" id="historyChart" role="list" aria-label="Daily focus time for the past seven days"></div>
+                </div>
+              </div>
+              <div class="history-insights">
+                <div class="history-insight">
+                  <p class="history-insight-label">Best day</p>
+                  <p class="history-insight-value" id="historyBestDay">No sessions</p>
+                </div>
+                <div class="history-insight">
+                  <p class="history-insight-label">Active days</p>
+                  <p class="history-insight-value" id="historyActiveDays">0 of 7</p>
+                </div>
+              </div>
               <div class="action-row">
                 <button class="add-button" id="copyHistoryJson" type="button">Copy JSON</button>
                 <button class="add-button" id="clearHistory" type="button">Clear History</button>
@@ -1041,7 +1247,7 @@
       const DEFAULT_BACKGROUND = 'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1600 900%27%3E%3Cdefs%3E%3ClinearGradient id=%27sky%27 x1=%270%27 x2=%270%27 y1=%270%27 y2=%271%27%3E%3Cstop stop-color=%27%2313223f%27/%3E%3Cstop offset=%270.42%27 stop-color=%27%23412838%27/%3E%3Cstop offset=%271%27 stop-color=%27%23040b13%27/%3E%3C/linearGradient%3E%3ClinearGradient id=%27lake%27 x1=%270%27 x2=%270%27 y1=%270%27 y2=%271%27%3E%3Cstop stop-color=%27%232e5361%27/%3E%3Cstop offset=%271%27 stop-color=%27%2308131b%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%271600%27 height=%27900%27 fill=%27url(%23sky)%27/%3E%3Ccircle cx=%27845%27 cy=%27325%27 r=%27210%27 fill=%27%23f4ad82%27 opacity=%27.34%27/%3E%3Cpath d=%27M0 560 210 250l180 245 170-190 230 255 160-205 280 260 150-160 220 205v240H0Z%27 fill=%27%23070d15%27 opacity=%27.88%27/%3E%3Cpath d=%27M0 640h1600v260H0z%27 fill=%27url(%23lake)%27 opacity=%27.9%27/%3E%3Cpath d=%27M520 900c130-150 350-226 552-260 188-32 352-16 528 8v252Z%27 fill=%27%2304090e%27 opacity=%27.64%27/%3E%3Cpath d=%27M0 724c210-58 404-72 598-35 184 35 322 111 480 158H0Z%27 fill=%27%23050b12%27 opacity=%27.68%27/%3E%3C/svg%3E")';
 
       const nativeScale = Number(new URLSearchParams(window.location.search).get("nativeScale"));
-      if (nativeScale > 0 && nativeScale < 1) {
+      if (nativeScale > 0 && nativeScale <= 1) {
         document.documentElement.classList.add("native-popover");
         document.documentElement.style.setProperty("--native-popover-scale", String(nativeScale));
       }
@@ -1072,6 +1278,9 @@
         addFocusSound: document.getElementById("addFocusSound"),
         addBreakSound: document.getElementById("addBreakSound"),
         clearAudio: document.getElementById("clearAudio"),
+        themeStyle: document.getElementById("themeStyle"),
+        surfaceTone: document.getElementById("surfaceTone"),
+        surfaceToneValue: document.getElementById("surfaceToneValue"),
         fontStyle: document.getElementById("fontStyle"),
         accentColor: document.getElementById("accentColor"),
         accentHex: document.getElementById("accentHex"),
@@ -1096,7 +1305,11 @@
         historySection: document.getElementById("historySection"),
         weekHours: document.getElementById("weekHours"),
         weekSessions: document.getElementById("weekSessions"),
-        historyList: document.getElementById("historyList"),
+        historyAverage: document.getElementById("historyAverage"),
+        historyChartMax: document.getElementById("historyChartMax"),
+        historyChart: document.getElementById("historyChart"),
+        historyBestDay: document.getElementById("historyBestDay"),
+        historyActiveDays: document.getElementById("historyActiveDays"),
         copyHistoryJson: document.getElementById("copyHistoryJson"),
         clearHistory: document.getElementById("clearHistory")
       };
@@ -1111,6 +1324,8 @@
         selectedFocusSoundId: "soft-bell",
         selectedBreakSoundId: "gentle-ping",
         selectedBackgroundId: "mountain-lake",
+        selectedThemeId: "midnight-glass",
+        surfaceTone: 0,
         selectedFontStyle: "rounded",
         accentColor: "#4ee8dc",
         timerShade: 100,
@@ -1168,6 +1383,77 @@
           name: "Menlo",
           appFont: 'Menlo, Monaco, "SF Mono", monospace',
           timerFont: 'Menlo, Monaco, "SF Mono", monospace'
+        }
+      ];
+
+      const themePresets = [
+        {
+          id: "midnight-glass",
+          name: "Midnight Glass",
+          canvas: "#050711",
+          settings: "#090b11",
+          control: "#05080e",
+          surface: "#ffffff",
+          glowA: "rgba(78, 232, 220, 0.18)",
+          glowB: "rgba(129, 140, 248, 0.16)",
+          settingsAlpha: 0.66,
+          controlAlpha: 0.58,
+          surfaceAlpha: 0.075,
+          blur: 24,
+          shellRadius: 9,
+          controlRadius: 9,
+          shadow: "0 28px 90px rgba(0, 0, 0, 0.58)"
+        },
+        {
+          id: "graphite",
+          name: "Graphite Studio",
+          canvas: "#090a0c",
+          settings: "#151619",
+          control: "#111214",
+          surface: "#f4f4f5",
+          glowA: "rgba(148, 163, 184, 0.12)",
+          glowB: "rgba(255, 255, 255, 0.06)",
+          settingsAlpha: 0.86,
+          controlAlpha: 0.76,
+          surfaceAlpha: 0.06,
+          blur: 8,
+          shellRadius: 4,
+          controlRadius: 6,
+          shadow: "0 18px 48px rgba(0, 0, 0, 0.46)"
+        },
+        {
+          id: "ember",
+          name: "Ember Lounge",
+          canvas: "#120907",
+          settings: "#1c100d",
+          control: "#180d0a",
+          surface: "#ffe7d7",
+          glowA: "rgba(251, 146, 60, 0.19)",
+          glowB: "rgba(244, 63, 94, 0.12)",
+          settingsAlpha: 0.78,
+          controlAlpha: 0.68,
+          surfaceAlpha: 0.075,
+          blur: 18,
+          shellRadius: 15,
+          controlRadius: 12,
+          shadow: "0 30px 84px rgba(45, 14, 6, 0.62)"
+        },
+        {
+          id: "forest",
+          name: "Forest Focus",
+          canvas: "#06100d",
+          settings: "#0b1813",
+          control: "#08130f",
+          surface: "#dcfce7",
+          glowA: "rgba(52, 211, 153, 0.17)",
+          glowB: "rgba(45, 212, 191, 0.1)",
+          settingsAlpha: 0.8,
+          controlAlpha: 0.7,
+          surfaceAlpha: 0.07,
+          blur: 20,
+          shellRadius: 11,
+          controlRadius: 10,
+          shadow: "0 26px 76px rgba(1, 24, 16, 0.6)"
         }
       ];
 
@@ -1290,6 +1576,8 @@
         elements.breakMinutes.value = state.breakMinutes;
         elements.timerShade.value = state.timerShade;
         elements.timerShadeValue.textContent = `${state.timerShade}%`;
+        elements.themeStyle.value = state.selectedThemeId;
+        elements.surfaceTone.value = state.surfaceTone;
         elements.tintSlider.value = state.tint;
         elements.tintValue.textContent = `${state.tint}%`;
         elements.fontStyle.value = state.selectedFontStyle;
@@ -1298,6 +1586,7 @@
         elements.focusSound.value = state.selectedFocusSoundId;
         elements.breakSound.value = state.selectedBreakSoundId;
         elements.backgroundSelect.value = state.selectedBackgroundId;
+        applyTheme();
         applyTimerShade();
         applyAccentColor();
         applyFontStyle();
@@ -1334,6 +1623,53 @@
           option.textContent = style.name;
           elements.fontStyle.appendChild(option);
         }
+
+        elements.themeStyle.innerHTML = "";
+        for (const theme of themePresets) {
+          const option = document.createElement("option");
+          option.value = theme.id;
+          option.textContent = theme.name;
+          elements.themeStyle.appendChild(option);
+        }
+      }
+
+      function applyTheme() {
+        const theme = themePresets.find((item) => item.id === state.selectedThemeId) || themePresets[0];
+        const tone = Math.min(20, Math.max(-20, Number(state.surfaceTone) || 0));
+        const target = tone >= 0 ? { r: 255, g: 255, b: 255 } : { r: 0, g: 0, b: 0 };
+        const amount = Math.abs(tone) / 100;
+        const adjust = (hex, strength = 1) => mixRgb(hexToRgb(hex), target, amount * strength);
+        const canvas = adjust(theme.canvas, 0.7);
+        const settings = adjust(theme.settings);
+        const control = adjust(theme.control);
+        const surface = adjust(theme.surface, 0.35);
+        const root = document.documentElement;
+
+        state.selectedThemeId = theme.id;
+        state.surfaceTone = tone;
+        root.setAttribute("data-theme", theme.id);
+        root.style.setProperty("--canvas", rgbToHex(canvas));
+        root.style.setProperty("--theme-glow-a", theme.glowA);
+        root.style.setProperty("--theme-glow-b", theme.glowB);
+        root.style.setProperty("--settings-bg", `rgba(${settings.r}, ${settings.g}, ${settings.b}, ${theme.settingsAlpha})`);
+        root.style.setProperty("--control-bg", `rgba(${control.r}, ${control.g}, ${control.b}, ${theme.controlAlpha})`);
+        root.style.setProperty("--control-border", `rgba(${surface.r}, ${surface.g}, ${surface.b}, 0.14)`);
+        root.style.setProperty("--surface-card", `rgba(${surface.r}, ${surface.g}, ${surface.b}, ${theme.surfaceAlpha})`);
+        root.style.setProperty("--surface-subtle", `rgba(${surface.r}, ${surface.g}, ${surface.b}, ${theme.surfaceAlpha * 0.62})`);
+        root.style.setProperty("--divider", `rgba(${surface.r}, ${surface.g}, ${surface.b}, 0.12)`);
+        root.style.setProperty("--material-blur", `${theme.blur}px`);
+        root.style.setProperty("--shell-radius", `${theme.shellRadius}px`);
+        root.style.setProperty("--control-radius", `${theme.controlRadius}px`);
+        root.style.setProperty("--shadow", theme.shadow);
+        elements.surfaceToneValue.textContent = tone <= -12
+          ? "Deep"
+          : tone <= -4
+            ? "Dim"
+            : tone < 4
+              ? "Balanced"
+              : tone < 12
+                ? "Soft"
+                : "Bright";
       }
 
       function applyBackground() {
@@ -1706,6 +2042,17 @@
         });
       }
 
+      function formatHistoryWeekday(key) {
+        const date = new Date(`${key}T00:00:00`);
+        return date.toLocaleDateString(undefined, { weekday: "short" });
+      }
+
+      function formatHistoryDuration(seconds) {
+        const safeSeconds = Math.max(0, Number(seconds) || 0);
+        if (safeSeconds < 3600) return `${Math.round(safeSeconds / 60)}m`;
+        return `${(safeSeconds / 3600).toFixed(1)}h`;
+      }
+
       function getWeeklyHistory() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -1758,25 +2105,48 @@
 
       function renderHistory() {
         const weekly = getWeeklyHistory();
+        const chartDays = weekly.days.slice().reverse();
+        const maxSeconds = Math.max(1, ...chartDays.map((day) => day.seconds));
+        const activeDays = chartDays.filter((day) => day.sessions > 0).length;
+        const bestDay = chartDays.reduce((best, day) => day.seconds > best.seconds ? day : best, chartDays[0]);
         elements.weekHours.textContent = `${(weekly.totalSeconds / 3600).toFixed(1)}h`;
         elements.weekSessions.textContent = String(weekly.totalSessions);
-        elements.historyList.innerHTML = "";
+        elements.historyAverage.textContent = `${formatHistoryDuration(weekly.totalSeconds / 7)} avg`;
+        elements.historyChartMax.textContent = formatHistoryDuration(Math.max(...chartDays.map((day) => day.seconds)));
+        elements.historyBestDay.textContent = bestDay.seconds > 0
+          ? `${formatHistoryWeekday(bestDay.key)} · ${formatHistoryDuration(bestDay.seconds)}`
+          : "No sessions";
+        elements.historyActiveDays.textContent = `${activeDays} of 7`;
+        elements.historyChart.innerHTML = "";
+        elements.historyChart.setAttribute(
+          "aria-label",
+          `Daily focus time for the past seven days. ${formatHistoryDuration(weekly.totalSeconds)} total across ${weekly.totalSessions} sessions.`
+        );
 
-        for (const day of weekly.days) {
-          const item = document.createElement("div");
-          item.className = "history-item";
+        for (const day of chartDays) {
+          const sessionLabel = `${day.sessions} ${day.sessions === 1 ? "session" : "sessions"}`;
+          const column = document.createElement("div");
+          column.className = `history-bar-column${day.key === weekly.days[0].key ? " is-today" : ""}`;
+          column.setAttribute("role", "listitem");
+          column.setAttribute(
+            "aria-label",
+            `${formatHistoryDay(day.key)}: ${formatHistoryDuration(day.seconds)} focus across ${sessionLabel}`
+          );
 
-          const label = document.createElement("div");
-          label.className = "history-day";
-          label.textContent = formatHistoryDay(day.key);
+          const track = document.createElement("div");
+          track.className = "history-bar-track";
 
-          const meta = document.createElement("div");
-          meta.className = "history-meta";
-          const hours = (day.seconds / 3600).toFixed(1);
-          meta.textContent = `${day.sessions}x · ${hours}h`;
+          const fill = document.createElement("div");
+          fill.className = `history-bar-fill${day.seconds > 0 ? "" : " is-empty"}`;
+          fill.style.setProperty("--bar-height", `${(day.seconds / maxSeconds) * 100}%`);
+          track.appendChild(fill);
 
-          item.append(label, meta);
-          elements.historyList.appendChild(item);
+          const label = document.createElement("span");
+          label.className = "history-bar-label";
+          label.textContent = formatHistoryWeekday(day.key);
+
+          column.append(track, label);
+          elements.historyChart.appendChild(column);
         }
       }
 
@@ -1818,6 +2188,8 @@
         state.customBackgrounds = [];
         state.selectedBackgroundId = "mountain-lake";
         appliedBackgroundKey = "";
+        state.selectedThemeId = defaults.selectedThemeId;
+        state.surfaceTone = defaults.surfaceTone;
         state.selectedFontStyle = "rounded";
         state.accentColor = defaults.accentColor;
         state.timerShade = defaults.timerShade;
@@ -1901,6 +2273,16 @@
           state.selectedBreakSoundId = elements.breakSound.value;
           saveState();
         });
+        elements.themeStyle.addEventListener("change", () => {
+          state.selectedThemeId = elements.themeStyle.value;
+          saveState();
+          render();
+        });
+        elements.surfaceTone.addEventListener("input", () => {
+          state.surfaceTone = Number(elements.surfaceTone.value);
+          render();
+        });
+        elements.surfaceTone.addEventListener("change", saveState);
         elements.fontStyle.addEventListener("change", () => {
           state.selectedFontStyle = elements.fontStyle.value;
           saveState();
@@ -2007,6 +2389,8 @@
       state.breakMinutes = clampMinutes(state.breakMinutes, 5);
       state.timerShade = Math.min(100, Math.max(0, Number(state.timerShade ?? 100)));
       state.tint = Math.min(82, Math.max(25, Number(state.tint) || 58));
+      if (!themePresets.some((theme) => theme.id === state.selectedThemeId)) state.selectedThemeId = defaults.selectedThemeId;
+      state.surfaceTone = Math.min(20, Math.max(-20, Number(state.surfaceTone) || 0));
       if (!fontStyles.some((style) => style.id === state.selectedFontStyle)) state.selectedFontStyle = "rounded";
       state.accentColor = normalizeHex(state.accentColor) || defaults.accentColor;
       state.customSounds = Array.isArray(state.customSounds) ? state.customSounds : [];

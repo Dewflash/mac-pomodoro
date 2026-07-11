@@ -15,9 +15,10 @@ unsigned indie build: on first launch macOS may require right-click → Open. Re
 - Default Web Audio chimes plus separate custom Focus and Break sounds; the native app copies
   imported sounds to local app storage so longer songs work (browser preview caps uploads at 2 MB)
 - Stop Alarm control for long completion sounds
-- Appearance tab: font presets, UI colour control, timer shade, wallpaper-style backgrounds with a
-  darkness/tint slider, and reset controls
-- History tab: past-week focus hours and sessions, daily log, copy-as-JSON, clear history
+- Appearance tab: full material themes with surface-tone control, font presets, independent accent
+  colour, timer shade, wallpaper-style backgrounds, and reset controls
+- History tab: seven-day focus chart, summary metrics, best-day and active-day insights,
+  copy-as-JSON, and clear history
 - Toast feedback instead of native alerts
 
 ## Build from source

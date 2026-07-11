@@ -204,6 +204,8 @@ check("T1 cycle enabled by default", app.el("cycleToggle").classList.contains("o
 check("T1 two built-in sounds listed", app.el("focusSound").children.length, 2);
 check("T1 three built-in backgrounds listed", app.el("backgroundSelect").children.length, 3);
 check("T1 six font styles listed", app.el("fontStyle").children.length, 6);
+check("T1 four theme presets listed", app.el("themeStyle").children.length, 4);
+check("T1 midnight theme applied", app.documentElement.getAttribute("data-theme"), "midnight-glass");
 check("T1 settings open on load", app.el("app").classList.contains("focus-mode"), false);
 
 // T2 — duration stepper + clamping
@@ -226,6 +228,17 @@ check(
   "#33aaff"
 );
 check("T3 hex input re-rendered uppercase", app.el("accentHex").value, "#33AAFF");
+
+// T3b — full theme preset + surface tone
+app.el("themeStyle").value = "graphite";
+app.fire("themeStyle", "change");
+check("T3b theme persisted", app.savedState().selectedThemeId, "graphite");
+check("T3b graphite theme applied", app.documentElement.getAttribute("data-theme"), "graphite");
+app.el("surfaceTone").value = "15";
+app.fire("surfaceTone", "input");
+app.fire("surfaceTone", "change");
+check("T3b surface tone persisted", app.savedState().surfaceTone, 15);
+check("T3b tone label updates", app.el("surfaceToneValue").textContent, "Bright");
 
 // T4 — start hides settings, tick counts down on wall clock
 app.fire("playButton");
@@ -341,7 +354,13 @@ storageD.set(
 const weekly = createInstance(storageD);
 check("T13 old sessions excluded from week hours", weekly.el("weekHours").textContent, "1.0h");
 check("T13 old sessions excluded from week count", weekly.el("weekSessions").textContent, "1");
-check("T13 seven day rows rendered", weekly.el("historyList").children.length, 7);
+check("T13 seven chart bars rendered", weekly.el("historyChart").children.length, 7);
+check("T13 one active day", weekly.el("historyActiveDays").textContent, "1 of 7");
+check("T13 daily average", weekly.el("historyAverage").textContent, "9m avg");
+check("T13 best day duration", weekly.el("historyBestDay").textContent.includes("1.0h"), true);
+check("T13 chart scale maximum", weekly.el("historyChartMax").textContent, "1.0h");
+check("T13 today is final chart bar", weekly.el("historyChart").children[6].className.includes("is-today"), true);
+check("T13 chart bar has accessible value", weekly.el("historyChart").children[6].getAttribute("aria-label").includes("1.0h focus across 1 session"), true);
 
 // ================================================================ instance 5
 // Timer state is pushed to the native bridge (PLAN-menubar-countdown).
