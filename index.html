@@ -35,6 +35,29 @@
       --shadow: 0 28px 90px rgba(0, 0, 0, 0.58);
       --app-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       --timer-font: var(--app-font);
+      --material-text: rgba(255, 255, 255, 0.96);
+      --material-muted: rgba(255, 255, 255, 0.66);
+      --material-faint: rgba(255, 255, 255, 0.46);
+      --material-border: rgba(255, 255, 255, 0.16);
+      --material-main: linear-gradient(90deg, rgba(6, 9, 18, 0.24), rgba(6, 9, 18, 0.06));
+      --material-settings: rgba(9, 11, 17, 0.82);
+      --material-panel: rgba(255, 255, 255, 0.06);
+      --material-panel-strong: rgba(8, 11, 18, 0.68);
+      --material-timer: transparent;
+      --material-control-deck: transparent;
+      --material-tabs: rgba(8, 11, 18, 0.18);
+      --material-button: rgba(9, 11, 18, 0.56);
+      --material-button-active: rgba(var(--accent-rgb), 0.28);
+      --material-primary-button: linear-gradient(135deg, rgba(var(--accent-light-rgb), 1), rgba(var(--accent-rgb), 0.9));
+      --material-primary-ink: #073331;
+      --material-inset: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 10px 24px rgba(0, 0, 0, 0.18);
+      --material-timer-border: transparent;
+      --material-deck-border: transparent;
+      --material-timer-radius: 14px;
+      --material-deck-radius: 14px;
+      --material-timer-padding: 0;
+      --material-deck-padding: 0;
+      --surface-tone-brightness: 1;
     }
 
     * {
@@ -1060,6 +1083,625 @@
       border-color: var(--divider);
     }
 
+    /* Material presets share structure. Only surfaces, type, ornament, and small control geometry vary. */
+    html[data-theme] .main {
+      position: relative;
+      color: var(--material-text);
+      background: var(--material-main);
+      filter: brightness(var(--surface-tone-brightness));
+    }
+
+    html[data-theme] .settings {
+      color: var(--material-text);
+      background: var(--material-settings);
+      filter: brightness(var(--surface-tone-brightness));
+    }
+
+    html[data-theme] .timer-zone {
+      padding: var(--material-timer-padding);
+      border: 1px solid var(--material-timer-border);
+      border-radius: var(--material-timer-radius);
+      background: var(--material-timer);
+      box-shadow: var(--material-inset);
+    }
+
+    html[data-theme] .control-row {
+      padding: var(--material-deck-padding);
+      border: 1px solid var(--material-deck-border);
+      border-radius: var(--material-deck-radius);
+      background: var(--material-control-deck);
+    }
+
+    html[data-theme] .tabs {
+      background: var(--material-tabs);
+    }
+
+    html[data-theme] .mode-switch,
+    html[data-theme] .cycle-card,
+    html[data-theme] .section,
+    html[data-theme] .stat-card,
+    html[data-theme] .history-chart-card,
+    html[data-theme] .history-insight,
+    html[data-theme] .history-log-card,
+    html[data-theme] select,
+    html[data-theme] input[type="number"],
+    html[data-theme] .hex-input,
+    html[data-theme] .stepper {
+      border-color: var(--material-border);
+      background-color: var(--material-panel);
+    }
+
+    html[data-theme] .icon-round,
+    html[data-theme] .settings-toggle,
+    html[data-theme] .step-button {
+      border-color: var(--material-border);
+      background: var(--material-button);
+      box-shadow: var(--material-inset);
+    }
+
+    html[data-theme] .control-item.primary .icon-round {
+      color: var(--material-primary-ink);
+      border: 1px solid var(--material-border);
+      background: var(--material-primary-button);
+      box-shadow: var(--material-inset);
+    }
+
+    html[data-theme] .mode-pill.active {
+      background: var(--material-button-active);
+    }
+
+    html[data-theme] h1,
+    html[data-theme] .timer,
+    html[data-theme] .section-title,
+    html[data-theme] .cycle-title,
+    html[data-theme] .history-chart-title,
+    html[data-theme] .history-insight-value,
+    html[data-theme] .history-log-title,
+    html[data-theme] .history-log-duration {
+      color: var(--material-text);
+    }
+
+    html[data-theme] .mode-pill,
+    html[data-theme] .control-label,
+    html[data-theme] .progress-labels,
+    html[data-theme] .tab,
+    html[data-theme] .field label,
+    html[data-theme] .stat-label,
+    html[data-theme] .history-insight-label,
+    html[data-theme] .history-log-time {
+      color: var(--material-muted);
+    }
+
+    html[data-theme] .step-button {
+      color: var(--material-text);
+    }
+
+    html[data-theme] .tip,
+    html[data-theme] .history-period,
+    html[data-theme] .history-chart-scale,
+    html[data-theme] .history-log-count,
+    html[data-theme] .history-log-empty {
+      color: var(--material-faint);
+    }
+
+    html[data-theme] .progress-track {
+      border: 1px solid var(--material-border);
+      background: var(--material-panel-strong);
+    }
+
+    html[data-theme] .switch {
+      border-color: var(--material-border);
+      background: var(--material-panel-strong);
+    }
+
+    html[data-theme] .toast {
+      border-color: var(--material-border);
+      background: var(--material-panel-strong);
+      color: var(--material-text);
+    }
+
+    /* Mac Native — restrained vibrancy and system-like controls. */
+    html[data-theme="mac-native"] {
+      --material-text: rgba(255, 255, 255, 0.96);
+      --material-muted: rgba(255, 255, 255, 0.68);
+      --material-faint: rgba(255, 255, 255, 0.46);
+      --material-border: rgba(255, 255, 255, 0.16);
+      --material-main:
+        radial-gradient(circle at 18% 18%, rgba(179, 139, 255, 0.12), transparent 30%),
+        linear-gradient(120deg, rgba(10, 18, 34, 0.82), rgba(7, 12, 23, 0.62));
+      --material-settings: linear-gradient(150deg, rgba(60, 65, 78, 0.78), rgba(34, 38, 48, 0.82));
+      --material-panel: rgba(255, 255, 255, 0.06);
+      --material-panel-strong: rgba(13, 17, 27, 0.46);
+      --material-timer: transparent;
+      --material-control-deck: transparent;
+      --material-tabs: rgba(255, 255, 255, 0.025);
+      --material-button: rgba(255, 255, 255, 0.055);
+      --material-button-active: linear-gradient(135deg, rgba(var(--accent-rgb), 0.72), rgba(var(--accent-strong-rgb), 0.54));
+      --material-primary-button: linear-gradient(135deg, rgba(var(--accent-light-rgb), 0.96), rgba(var(--accent-rgb), 0.84));
+      --material-primary-ink: #ffffff;
+      --material-inset: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 14px 32px rgba(0, 0, 0, 0.18);
+    }
+
+    html[data-theme="mac-native"] .settings {
+      -webkit-backdrop-filter: blur(28px) saturate(1.28);
+      backdrop-filter: blur(28px) saturate(1.28);
+    }
+
+    html[data-theme="mac-native"] .mode-switch {
+      border-radius: 10px;
+    }
+
+    html[data-theme="mac-native"] .mode-pill {
+      border-radius: 7px;
+    }
+
+    /* Field Notes — cotton paper, binding, ruled cards, and stamped controls. */
+    html[data-theme="field-notes"] {
+      color-scheme: light;
+      --text: #29251f;
+      --material-text: #29251f;
+      --material-muted: rgba(41, 37, 31, 0.68);
+      --material-faint: rgba(41, 37, 31, 0.46);
+      --material-border: rgba(73, 59, 40, 0.28);
+      --material-main:
+        linear-gradient(90deg, rgba(112, 84, 46, 0.14) 0 8px, transparent 8px),
+        repeating-linear-gradient(0deg, transparent 0 23px, rgba(68, 123, 164, 0.16) 23px 24px),
+        radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.66), transparent 36%),
+        #efe4c9;
+      --material-settings:
+        linear-gradient(90deg, rgba(193, 75, 69, 0.3) 0 1px, transparent 1px 28px, rgba(193, 75, 69, 0.3) 28px 29px, transparent 29px),
+        repeating-linear-gradient(0deg, transparent 0 23px, rgba(68, 123, 164, 0.18) 23px 24px),
+        #f4ead2;
+      --material-panel: rgba(255, 251, 235, 0.54);
+      --material-panel-strong: rgba(111, 91, 58, 0.13);
+      --material-timer:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.64), transparent 42%),
+        rgba(248, 239, 215, 0.72);
+      --material-control-deck: linear-gradient(180deg, rgba(246, 237, 211, 0.78), rgba(225, 209, 174, 0.72));
+      --material-tabs: rgba(236, 223, 192, 0.78);
+      --material-button: rgba(245, 236, 213, 0.86);
+      --material-button-active: rgba(var(--accent-rgb), 0.2);
+      --material-primary-button: rgba(var(--accent-rgb), 0.82);
+      --material-primary-ink: #fff8e8;
+      --material-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.32), 0 5px 10px rgba(79, 59, 30, 0.12);
+      --material-timer-border: rgba(85, 68, 43, 0.24);
+      --material-deck-border: rgba(85, 68, 43, 0.22);
+      --material-timer-radius: 3px;
+      --material-deck-radius: 2px;
+      --material-timer-padding: 9px 13px;
+      --material-deck-padding: 8px 12px;
+    }
+
+    html[data-theme="field-notes"] .main {
+      box-shadow: inset 9px 0 0 rgba(112, 84, 46, 0.12), inset 11px 0 0 rgba(55, 45, 33, 0.15);
+    }
+
+    html[data-theme="field-notes"] .mode-switch {
+      border-radius: 2px;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    html[data-theme="field-notes"] .mode-pill {
+      border-radius: 1px;
+      background: rgba(241, 230, 204, 0.86);
+      box-shadow: 0 3px 7px rgba(74, 55, 27, 0.16);
+      clip-path: polygon(1% 6%, 98% 0, 100% 91%, 3% 100%);
+    }
+
+    html[data-theme="field-notes"] .mode-pill.active {
+      color: #173e5d;
+      background: rgba(var(--accent-rgb), 0.18);
+    }
+
+    html[data-theme="field-notes"] .timer {
+      font-weight: 620;
+      text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    html[data-theme="field-notes"] .icon-round {
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 2px rgba(78, 67, 48, 0.1), 0 3px 0 rgba(78, 67, 48, 0.15);
+    }
+
+    html[data-theme="field-notes"] .cycle-card {
+      border-style: dashed;
+      border-radius: 2px;
+    }
+
+    /* Winter Almanac — birch, milky ice enamel, silver, and etched snow. */
+    html[data-theme="winter-almanac"] {
+      color-scheme: light;
+      --text: #1d3447;
+      --material-text: #1d3447;
+      --material-muted: rgba(29, 52, 71, 0.68);
+      --material-faint: rgba(29, 52, 71, 0.46);
+      --material-border: rgba(61, 91, 113, 0.25);
+      --material-main:
+        repeating-linear-gradient(90deg, rgba(115, 138, 151, 0.06) 0 1px, transparent 1px 31px),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(222, 234, 241, 0.9));
+      --material-settings: linear-gradient(145deg, rgba(251, 253, 253, 0.96), rgba(226, 237, 244, 0.94));
+      --material-panel: rgba(255, 255, 255, 0.55);
+      --material-panel-strong: rgba(74, 111, 139, 0.12);
+      --material-timer:
+        radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.92), transparent 31%),
+        radial-gradient(circle at 82% 74%, rgba(116, 164, 196, 0.18), transparent 32%),
+        linear-gradient(145deg, rgba(239, 248, 252, 0.9), rgba(205, 225, 237, 0.8));
+      --material-control-deck: linear-gradient(180deg, rgba(237, 244, 247, 0.94), rgba(216, 230, 239, 0.9));
+      --material-tabs: rgba(244, 249, 251, 0.88);
+      --material-button: linear-gradient(145deg, #fbfdfe, #d5e3eb);
+      --material-button-active: linear-gradient(145deg, rgba(var(--accent-rgb), 0.78), rgba(var(--accent-strong-rgb), 0.62));
+      --material-primary-button: linear-gradient(145deg, #73a0bf, #356989);
+      --material-primary-ink: #f8fdff;
+      --material-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(67, 96, 117, 0.18), 0 7px 18px rgba(50, 82, 104, 0.16);
+      --material-timer-border: rgba(89, 124, 149, 0.3);
+      --material-deck-border: rgba(89, 124, 149, 0.24);
+      --material-timer-radius: 18px;
+      --material-deck-radius: 12px;
+      --material-timer-padding: 9px 13px;
+      --material-deck-padding: 7px 12px;
+    }
+
+    html[data-theme="winter-almanac"] .main::before {
+      content: "❄  ·  ❅       ❆  ·  ❄       ❅";
+      position: absolute;
+      inset: 74px 22px auto;
+      color: rgba(86, 133, 166, 0.18);
+      font-size: 17px;
+      letter-spacing: 7px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    html[data-theme="winter-almanac"] .main > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    html[data-theme="winter-almanac"] .timer {
+      color: #173a55;
+      text-shadow: 0 1px 0 #fff, 0 5px 16px rgba(50, 95, 126, 0.18);
+    }
+
+    html[data-theme="winter-almanac"] .icon-round,
+    html[data-theme="winter-almanac"] .tomato {
+      color: #244d6c;
+      border-radius: 50%;
+    }
+
+    /* Heritage Workshop — joined walnut, oxblood leather, brass, and enamel. */
+    html[data-theme="heritage-workshop"] {
+      --material-text: #ead9b8;
+      --material-muted: rgba(234, 217, 184, 0.68);
+      --material-faint: rgba(234, 217, 184, 0.45);
+      --material-border: rgba(191, 151, 84, 0.42);
+      --material-main:
+        repeating-linear-gradient(0deg, rgba(31, 15, 8, 0.34) 0 2px, transparent 2px 24px),
+        repeating-linear-gradient(91deg, rgba(255, 213, 139, 0.035) 0 1px, transparent 1px 17px),
+        linear-gradient(90deg, #2b160c, #4b2917 48%, #241108);
+      --material-settings:
+        radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.025), transparent 24%),
+        #12100e;
+      --material-panel: rgba(32, 24, 18, 0.88);
+      --material-panel-strong: rgba(7, 7, 6, 0.82);
+      --material-timer: linear-gradient(180deg, #12110f, #050505);
+      --material-control-deck:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px),
+        linear-gradient(145deg, #431a18, #281010);
+      --material-tabs: #151311;
+      --material-button: radial-gradient(circle at 35% 28%, #d0a25c, #8b5c25 55%, #3f250f 100%);
+      --material-button-active: linear-gradient(180deg, #eadcbb, #c5aa78);
+      --material-primary-button: radial-gradient(circle at 35% 28%, #d9ad67, #98682d 58%, #4b2c12 100%);
+      --material-primary-ink: #21140a;
+      --material-inset: inset 0 1px 0 rgba(255, 236, 187, 0.36), inset 0 -2px 2px rgba(40, 15, 5, 0.8), 0 5px 12px rgba(0, 0, 0, 0.46);
+      --material-timer-border: #9c7138;
+      --material-deck-border: #76502b;
+      --material-timer-radius: 18px;
+      --material-deck-radius: 13px;
+      --material-timer-padding: 9px 14px;
+      --material-deck-padding: 8px 12px;
+    }
+
+    html[data-theme="heritage-workshop"] .shell {
+      box-shadow: var(--shadow), inset 0 0 0 5px rgba(32, 14, 6, 0.78), inset 0 0 0 7px rgba(180, 125, 58, 0.25);
+    }
+
+    html[data-theme="heritage-workshop"] .mode-switch,
+    html[data-theme="heritage-workshop"] .cycle-card {
+      border-width: 2px;
+      box-shadow: inset 0 0 0 1px rgba(32, 15, 7, 0.9), 0 4px 10px rgba(0, 0, 0, 0.34);
+    }
+
+    html[data-theme="heritage-workshop"] .mode-pill.active {
+      color: #21160d;
+    }
+
+    html[data-theme="heritage-workshop"] .timer {
+      color: #d8bd86;
+      letter-spacing: 0.03em;
+      text-shadow: 0 2px 0 #2a190c, 0 0 18px rgba(208, 158, 82, 0.18);
+    }
+
+    html[data-theme="heritage-workshop"] .icon-round {
+      color: #24160b;
+      border: 2px solid #8f632f;
+      box-shadow: inset 0 0 0 2px rgba(238, 202, 137, 0.22), 0 4px 0 #3a210f, 0 8px 14px rgba(0, 0, 0, 0.38);
+    }
+
+    /* Darkroom Console — camera leather, aluminium, film perforations, red safelight. */
+    html[data-theme="darkroom-console"] {
+      --material-text: #d1ccc2;
+      --material-muted: rgba(209, 204, 194, 0.68);
+      --material-faint: rgba(209, 204, 194, 0.44);
+      --material-border: rgba(166, 159, 146, 0.28);
+      --material-main:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 4px),
+        linear-gradient(145deg, #171716, #080808);
+      --material-settings: linear-gradient(180deg, #111110, #070707);
+      --material-panel: rgba(18, 18, 17, 0.94);
+      --material-panel-strong: rgba(4, 4, 4, 0.88);
+      --material-timer: radial-gradient(circle at 50% 50%, rgba(125, 30, 24, 0.3), transparent 72%), #090807;
+      --material-control-deck: linear-gradient(180deg, #1d1d1b, #0c0c0b);
+      --material-tabs: #0d0d0c;
+      --material-button: radial-gradient(circle at 38% 30%, #85827c, #3f3e3a 56%, #171716 100%);
+      --material-button-active: linear-gradient(180deg, rgba(var(--accent-rgb), 0.46), rgba(var(--accent-strong-rgb), 0.26));
+      --material-primary-button: radial-gradient(circle at 38% 30%, #9a4b43, #69251f 56%, #250b09 100%);
+      --material-primary-ink: #f4d7d2;
+      --material-inset: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -2px 3px rgba(0, 0, 0, 0.8), 0 5px 14px rgba(0, 0, 0, 0.52);
+      --material-timer-border: #5a5751;
+      --material-deck-border: #3a3834;
+      --material-timer-radius: 10px;
+      --material-deck-radius: 9px;
+      --material-timer-padding: 9px 14px;
+      --material-deck-padding: 8px 12px;
+    }
+
+    html[data-theme="darkroom-console"] .section {
+      padding: 9px 9px 10px;
+      border: 1px solid #34322e;
+      background:
+        repeating-linear-gradient(90deg, #050505 0 5px, transparent 5px 10px) top / 100% 5px no-repeat,
+        repeating-linear-gradient(90deg, #050505 0 5px, transparent 5px 10px) bottom / 100% 5px no-repeat,
+        rgba(13, 13, 12, 0.82);
+    }
+
+    html[data-theme="darkroom-console"] .timer {
+      color: #e65b50;
+      font-family: "DIN Condensed", "SF Mono", Menlo, monospace;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 12px rgba(230, 64, 54, 0.44), 0 0 28px rgba(144, 26, 20, 0.24);
+    }
+
+    html[data-theme="darkroom-console"] .progress-track {
+      border-radius: 2px;
+      background: repeating-linear-gradient(90deg, #26231f 0 1px, #080808 1px 17px);
+    }
+
+    html[data-theme="darkroom-console"] .mode-switch,
+    html[data-theme="darkroom-console"] .mode-pill,
+    html[data-theme="darkroom-console"] .cycle-card {
+      border-radius: 3px;
+    }
+
+    /* Log Cabin — honey pine, carved framing, woven wool, and blackened iron. */
+    html[data-theme="log-cabin"] {
+      --material-text: #f0d9ae;
+      --material-muted: rgba(240, 217, 174, 0.7);
+      --material-faint: rgba(240, 217, 174, 0.46);
+      --material-border: rgba(39, 24, 13, 0.7);
+      --material-main:
+        repeating-linear-gradient(0deg, transparent 0 47px, rgba(38, 19, 9, 0.72) 47px 51px),
+        repeating-linear-gradient(92deg, rgba(255, 227, 164, 0.04) 0 1px, transparent 1px 21px),
+        linear-gradient(90deg, #6d3d1f, #9a5b2d 52%, #5f3219);
+      --material-settings:
+        repeating-linear-gradient(0deg, transparent 0 64px, rgba(35, 18, 9, 0.55) 64px 68px),
+        linear-gradient(90deg, #60351b, #814923);
+      --material-panel: rgba(76, 39, 18, 0.68);
+      --material-panel-strong: rgba(25, 21, 16, 0.88);
+      --material-timer: linear-gradient(180deg, rgba(108, 57, 27, 0.9), rgba(69, 34, 16, 0.92));
+      --material-control-deck:
+        repeating-linear-gradient(45deg, rgba(109, 88, 44, 0.42) 0 6px, rgba(70, 50, 29, 0.42) 6px 12px),
+        #3f301f;
+      --material-tabs: rgba(62, 31, 15, 0.74);
+      --material-button: radial-gradient(circle at 38% 30%, #4c4a43, #211f1a 62%, #0f0e0c);
+      --material-button-active: linear-gradient(180deg, #b88343, #70431f);
+      --material-primary-button: radial-gradient(circle at 38% 30%, #66604f, #2b2921 62%, #12110e);
+      --material-primary-ink: #eed5a6;
+      --material-inset: inset 0 1px 0 rgba(255, 223, 160, 0.2), inset 0 -2px 2px rgba(32, 14, 5, 0.72), 0 5px 12px rgba(24, 10, 4, 0.38);
+      --material-timer-border: #2b190e;
+      --material-deck-border: #2c2117;
+      --material-timer-radius: 5px;
+      --material-deck-radius: 4px;
+      --material-timer-padding: 8px 13px;
+      --material-deck-padding: 8px 12px;
+    }
+
+    html[data-theme="log-cabin"] .timer-zone {
+      box-shadow: inset 0 0 0 3px rgba(190, 126, 62, 0.22), inset 0 0 0 5px rgba(37, 19, 10, 0.5), 0 6px 14px rgba(31, 14, 5, 0.32);
+    }
+
+    html[data-theme="log-cabin"] .timer {
+      color: #f3d9aa;
+      text-shadow: 0 2px 0 #45240f, 0 5px 12px rgba(31, 14, 5, 0.4);
+    }
+
+    html[data-theme="log-cabin"] .icon-round {
+      color: #ead0a0;
+      border: 2px solid #11100e;
+      box-shadow: inset 0 0 0 2px #49463e, 0 4px 0 #17140f;
+    }
+
+    /* Orchestra Studio — acoustic felt, maple, score paper, and brass hardware. */
+    html[data-theme="orchestra-studio"] {
+      --material-text: #ead8b6;
+      --material-muted: rgba(234, 216, 182, 0.68);
+      --material-faint: rgba(234, 216, 182, 0.45);
+      --material-border: rgba(190, 146, 78, 0.34);
+      --material-main:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px),
+        linear-gradient(145deg, #151514, #080808);
+      --material-settings: linear-gradient(180deg, #11110f, #080807);
+      --material-panel: rgba(20, 19, 17, 0.92);
+      --material-panel-strong: rgba(7, 7, 6, 0.88);
+      --material-timer:
+        repeating-linear-gradient(0deg, transparent 0 13px, rgba(74, 67, 56, 0.17) 13px 14px),
+        linear-gradient(145deg, #f0e3c8, #d7c49f);
+      --material-control-deck: linear-gradient(90deg, #3b2113, #714323 48%, #2e190f);
+      --material-tabs: #0c0c0b;
+      --material-button: linear-gradient(145deg, #25231f, #0c0c0b);
+      --material-button-active: linear-gradient(145deg, #c69a57, #8c5b29);
+      --material-primary-button: linear-gradient(145deg, #caa15f, #825225);
+      --material-primary-ink: #24150d;
+      --material-inset: inset 0 1px 0 rgba(255, 234, 190, 0.18), inset 0 -2px 2px rgba(0, 0, 0, 0.68), 0 6px 14px rgba(0, 0, 0, 0.4);
+      --material-timer-border: #8f6834;
+      --material-deck-border: #3b291d;
+      --material-timer-radius: 3px;
+      --material-deck-radius: 2px;
+      --material-timer-padding: 9px 14px;
+      --material-deck-padding: 8px 12px;
+    }
+
+    html[data-theme="orchestra-studio"] .timer,
+    html[data-theme="orchestra-studio"] .timer-zone .progress-labels {
+      color: #3e241f;
+      text-shadow: none;
+    }
+
+    html[data-theme="orchestra-studio"] .progress-track {
+      height: 8px;
+      border-radius: 0;
+      background: repeating-linear-gradient(90deg, #5c4c39 0 1px, transparent 1px 17px), rgba(92, 76, 57, 0.22);
+    }
+
+    html[data-theme="orchestra-studio"] .icon-round {
+      border-radius: 6px;
+      border: 2px solid #86602e;
+    }
+
+    /* Pixel Grove — original block-world pixel language, crisp and grid-based. */
+    html[data-theme="pixel-grove"] {
+      --material-text: #fff3c3;
+      --material-muted: rgba(255, 243, 195, 0.74);
+      --material-faint: rgba(255, 243, 195, 0.5);
+      --material-border: #0b0b09;
+      --material-main:
+        linear-gradient(180deg, rgba(55, 145, 213, 0.9) 0 36%, transparent 36%),
+        repeating-linear-gradient(0deg, #405f1c 0 16px, #284412 16px 32px),
+        #1f3d12;
+      --material-settings:
+        repeating-linear-gradient(0deg, #30312e 0 23px, #252623 23px 24px),
+        #282925;
+      --material-panel: #30312d;
+      --material-panel-strong: #141512;
+      --material-timer: linear-gradient(180deg, #343633, #181a18);
+      --material-control-deck: linear-gradient(180deg, #456c1e 0 16%, #2c4715 16% 32%, #493019 32% 100%);
+      --material-tabs: #252622;
+      --material-button: linear-gradient(135deg, #5c5f59, #262824);
+      --material-button-active: linear-gradient(180deg, #8bd530, #4f8c18);
+      --material-primary-button: linear-gradient(180deg, #9ce43a, #4d9015);
+      --material-primary-ink: #102008;
+      --material-inset: inset 3px 3px 0 rgba(255, 255, 255, 0.16), inset -3px -3px 0 rgba(0, 0, 0, 0.42), 4px 4px 0 rgba(0, 0, 0, 0.38);
+      --material-timer-border: #0c0d0b;
+      --material-deck-border: #10110e;
+      --material-timer-radius: 0;
+      --material-deck-radius: 0;
+      --material-timer-padding: 9px 13px;
+      --material-deck-padding: 8px 12px;
+    }
+
+    html[data-theme="pixel-grove"] body,
+    html[data-theme="pixel-grove"] button,
+    html[data-theme="pixel-grove"] input,
+    html[data-theme="pixel-grove"] select {
+      font-family: Menlo, Monaco, "SF Mono", monospace;
+      font-smooth: never;
+      -webkit-font-smoothing: none;
+    }
+
+    html[data-theme="pixel-grove"] .shell,
+    html[data-theme="pixel-grove"] .settings-toggle,
+    html[data-theme="pixel-grove"] .mode-switch,
+    html[data-theme="pixel-grove"] .mode-pill,
+    html[data-theme="pixel-grove"] .icon-round,
+    html[data-theme="pixel-grove"] .cycle-card,
+    html[data-theme="pixel-grove"] .switch,
+    html[data-theme="pixel-grove"] select,
+    html[data-theme="pixel-grove"] input,
+    html[data-theme="pixel-grove"] .section,
+    html[data-theme="pixel-grove"] .stat-card,
+    html[data-theme="pixel-grove"] .history-chart-card,
+    html[data-theme="pixel-grove"] .history-insight,
+    html[data-theme="pixel-grove"] .history-log-card {
+      border-radius: 0;
+    }
+
+    html[data-theme="pixel-grove"] .timer {
+      color: #f4f0dd;
+      font-family: Menlo, Monaco, "SF Mono", monospace;
+      font-weight: 800;
+      letter-spacing: -0.08em;
+      text-shadow: 4px 4px 0 #0c0d0b;
+    }
+
+    html[data-theme="pixel-grove"] .icon-round {
+      border-width: 3px;
+      border-radius: 0;
+    }
+
+    /* Country Roadhouse — barnwood, tooled leather, denim, enamel, and instrument hardware. */
+    html[data-theme="country-roadhouse"] {
+      --material-text: #f0d3a1;
+      --material-muted: rgba(240, 211, 161, 0.7);
+      --material-faint: rgba(240, 211, 161, 0.46);
+      --material-border: rgba(213, 171, 104, 0.38);
+      --material-main:
+        repeating-linear-gradient(90deg, rgba(255, 220, 161, 0.035) 0 1px, transparent 1px 19px),
+        linear-gradient(90deg, #3f1d0e, #703818 48%, #32160b);
+      --material-settings:
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 4px),
+        #142738;
+      --material-panel: rgba(19, 42, 60, 0.78);
+      --material-panel-strong: rgba(23, 17, 13, 0.86);
+      --material-timer:
+        radial-gradient(circle at 16% 16%, rgba(255, 255, 255, 0.28), transparent 33%),
+        linear-gradient(145deg, #ead6ae, #c7a870);
+      --material-control-deck:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 4px),
+        #4b2416;
+      --material-tabs: #102334;
+      --material-button: linear-gradient(145deg, #4b4740, #171614);
+      --material-button-active: linear-gradient(145deg, #d2b077, #8a6336);
+      --material-primary-button: linear-gradient(145deg, #d8b77e, #8b6537);
+      --material-primary-ink: #2c1c11;
+      --material-inset: inset 0 1px 0 rgba(255, 237, 200, 0.2), inset 0 -2px 2px rgba(44, 20, 8, 0.72), 0 5px 14px rgba(25, 11, 5, 0.4);
+      --material-timer-border: #3b2518;
+      --material-deck-border: #2b160e;
+      --material-timer-radius: 6px;
+      --material-deck-radius: 8px;
+      --material-timer-padding: 9px 14px;
+      --material-deck-padding: 8px 12px;
+    }
+
+    html[data-theme="country-roadhouse"] .timer {
+      color: #2b2119;
+      font-family: "DIN Condensed", "Avenir Next Condensed", sans-serif;
+      font-weight: 760;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    html[data-theme="country-roadhouse"] .progress-track {
+      height: 8px;
+      border-radius: 0;
+      background: repeating-linear-gradient(90deg, #2a2119 0 2px, #8a6b48 2px 17px);
+    }
+
+    html[data-theme="country-roadhouse"] .section {
+      padding: 8px 8px 10px;
+      border: 1px dashed rgba(219, 177, 109, 0.36);
+      border-radius: 8px;
+      background-color: rgba(18, 42, 59, 0.74);
+    }
+
     @keyframes toast-in {
       from {
         opacity: 0;
@@ -1237,7 +1879,7 @@
                 <label for="surfaceTone">Surface tone <span id="surfaceToneValue">Balanced</span></label>
                 <input id="surfaceTone" type="range" min="-20" max="20" value="0">
               </div>
-              <p class="tip">Themes change surfaces, contrast, corners, blur, and shadow. Accent stays independent.</p>
+              <p class="tip">Themes rebuild the full material system. Font and accent remain customisable.</p>
             </section>
 
             <section class="section">
@@ -1430,10 +2072,10 @@
         selectedFocusSoundId: "soft-bell",
         selectedBreakSoundId: "gentle-ping",
         selectedBackgroundId: "mountain-lake",
-        selectedThemeId: "midnight-glass",
+        selectedThemeId: "mac-native",
         surfaceTone: 0,
         selectedFontStyle: "rounded",
-        accentColor: "#4ee8dc",
+        accentColor: "#b38bff",
         tint: 58,
         customSounds: [],
         nativeSounds: [],
@@ -1493,74 +2135,184 @@
 
       const themePresets = [
         {
-          id: "midnight-glass",
-          name: "Midnight Glass",
-          canvas: "#050711",
-          settings: "#090b11",
-          control: "#05080e",
+          id: "mac-native",
+          name: "Mac Native",
+          canvas: "#08101f",
+          settings: "#303642",
+          control: "#141a26",
           surface: "#ffffff",
-          glowA: "rgba(78, 232, 220, 0.18)",
-          glowB: "rgba(129, 140, 248, 0.16)",
-          settingsAlpha: 0.66,
-          controlAlpha: 0.58,
-          surfaceAlpha: 0.075,
-          blur: 24,
-          shellRadius: 9,
-          controlRadius: 9,
-          shadow: "0 28px 90px rgba(0, 0, 0, 0.58)"
-        },
-        {
-          id: "graphite",
-          name: "Graphite Studio",
-          canvas: "#090a0c",
-          settings: "#151619",
-          control: "#111214",
-          surface: "#f4f4f5",
-          glowA: "rgba(148, 163, 184, 0.12)",
-          glowB: "rgba(255, 255, 255, 0.06)",
-          settingsAlpha: 0.86,
-          controlAlpha: 0.76,
-          surfaceAlpha: 0.06,
-          blur: 8,
-          shellRadius: 4,
-          controlRadius: 6,
-          shadow: "0 18px 48px rgba(0, 0, 0, 0.46)"
-        },
-        {
-          id: "ember",
-          name: "Ember Lounge",
-          canvas: "#120907",
-          settings: "#1c100d",
-          control: "#180d0a",
-          surface: "#ffe7d7",
-          glowA: "rgba(251, 146, 60, 0.19)",
-          glowB: "rgba(244, 63, 94, 0.12)",
+          glowA: "rgba(179, 139, 255, 0.18)",
+          glowB: "rgba(115, 150, 255, 0.12)",
           settingsAlpha: 0.78,
-          controlAlpha: 0.68,
-          surfaceAlpha: 0.075,
-          blur: 18,
-          shellRadius: 15,
-          controlRadius: 12,
-          shadow: "0 30px 84px rgba(45, 14, 6, 0.62)"
+          controlAlpha: 0.62,
+          surfaceAlpha: 0.07,
+          blur: 28,
+          shellRadius: 10,
+          controlRadius: 10,
+          shadow: "0 28px 90px rgba(0, 0, 0, 0.54)",
+          defaultFontId: "rounded",
+          defaultAccent: "#b38bff"
         },
         {
-          id: "forest",
-          name: "Forest Focus",
-          canvas: "#06100d",
-          settings: "#0b1813",
-          control: "#08130f",
-          surface: "#dcfce7",
-          glowA: "rgba(52, 211, 153, 0.17)",
-          glowB: "rgba(45, 212, 191, 0.1)",
-          settingsAlpha: 0.8,
-          controlAlpha: 0.7,
+          id: "field-notes",
+          name: "Field Notes",
+          canvas: "#d8c6a0",
+          settings: "#f3ead3",
+          control: "#eee0bc",
+          surface: "#3b2e22",
+          glowA: "rgba(62, 111, 148, 0.12)",
+          glowB: "rgba(150, 111, 58, 0.1)",
+          settingsAlpha: 0.96,
+          controlAlpha: 0.82,
+          surfaceAlpha: 0.08,
+          blur: 0,
+          shellRadius: 4,
+          controlRadius: 3,
+          shadow: "0 24px 64px rgba(65, 45, 20, 0.34)",
+          defaultFontId: "editorial",
+          defaultAccent: "#1f4d74"
+        },
+        {
+          id: "winter-almanac",
+          name: "Winter Almanac",
+          canvas: "#dfeaf1",
+          settings: "#f5f7f7",
+          control: "#e7eef3",
+          surface: "#24435f",
+          glowA: "rgba(74, 126, 163, 0.15)",
+          glowB: "rgba(255, 255, 255, 0.28)",
+          settingsAlpha: 0.96,
+          controlAlpha: 0.86,
           surfaceAlpha: 0.07,
-          blur: 20,
-          shellRadius: 11,
-          controlRadius: 10,
-          shadow: "0 26px 76px rgba(1, 24, 16, 0.6)"
+          blur: 7,
+          shellRadius: 14,
+          controlRadius: 12,
+          shadow: "0 26px 76px rgba(54, 86, 107, 0.28)",
+          defaultFontId: "editorial",
+          defaultAccent: "#3a6ea5"
+        },
+        {
+          id: "heritage-workshop",
+          name: "Heritage Workshop",
+          canvas: "#160e09",
+          settings: "#12100e",
+          control: "#211710",
+          surface: "#d1ad68",
+          glowA: "rgba(192, 137, 66, 0.16)",
+          glowB: "rgba(101, 43, 24, 0.14)",
+          settingsAlpha: 0.94,
+          controlAlpha: 0.88,
+          surfaceAlpha: 0.07,
+          blur: 0,
+          shellRadius: 3,
+          controlRadius: 5,
+          shadow: "0 28px 78px rgba(27, 11, 4, 0.66)",
+          defaultFontId: "editorial",
+          defaultAccent: "#b08d57"
+        },
+        {
+          id: "darkroom-console",
+          name: "Darkroom Console",
+          canvas: "#060606",
+          settings: "#0a0a09",
+          control: "#10100f",
+          surface: "#c6c0b5",
+          glowA: "rgba(199, 76, 66, 0.13)",
+          glowB: "rgba(255, 137, 74, 0.06)",
+          settingsAlpha: 0.96,
+          controlAlpha: 0.9,
+          surfaceAlpha: 0.055,
+          blur: 0,
+          shellRadius: 5,
+          controlRadius: 3,
+          shadow: "0 24px 66px rgba(0, 0, 0, 0.72)",
+          defaultFontId: "technical",
+          defaultAccent: "#c74c42"
+        },
+        {
+          id: "log-cabin",
+          name: "Log Cabin",
+          canvas: "#2a140a",
+          settings: "#3a1c0e",
+          control: "#1d1711",
+          surface: "#e6c78e",
+          glowA: "rgba(211, 139, 64, 0.18)",
+          glowB: "rgba(104, 121, 49, 0.12)",
+          settingsAlpha: 0.92,
+          controlAlpha: 0.88,
+          surfaceAlpha: 0.075,
+          blur: 0,
+          shellRadius: 4,
+          controlRadius: 4,
+          shadow: "0 28px 74px rgba(39, 16, 5, 0.62)",
+          defaultFontId: "editorial",
+          defaultAccent: "#6f7b31"
+        },
+        {
+          id: "orchestra-studio",
+          name: "Orchestra Studio",
+          canvas: "#080807",
+          settings: "#0c0c0b",
+          control: "#171412",
+          surface: "#e9d5ae",
+          glowA: "rgba(190, 143, 74, 0.14)",
+          glowB: "rgba(112, 45, 37, 0.09)",
+          settingsAlpha: 0.96,
+          controlAlpha: 0.9,
+          surfaceAlpha: 0.065,
+          blur: 0,
+          shellRadius: 3,
+          controlRadius: 3,
+          shadow: "0 28px 74px rgba(0, 0, 0, 0.7)",
+          defaultFontId: "editorial",
+          defaultAccent: "#7b1e26"
+        },
+        {
+          id: "pixel-grove",
+          name: "Pixel Grove",
+          canvas: "#14270f",
+          settings: "#20211e",
+          control: "#242321",
+          surface: "#f7e37a",
+          glowA: "rgba(104, 170, 45, 0.18)",
+          glowB: "rgba(72, 155, 221, 0.14)",
+          settingsAlpha: 0.98,
+          controlAlpha: 0.94,
+          surfaceAlpha: 0.08,
+          blur: 0,
+          shellRadius: 0,
+          controlRadius: 0,
+          shadow: "8px 8px 0 rgba(7, 12, 5, 0.7)",
+          defaultFontId: "mono",
+          defaultAccent: "#6baa4a"
+        },
+        {
+          id: "country-roadhouse",
+          name: "Country Roadhouse",
+          canvas: "#2b1308",
+          settings: "#142332",
+          control: "#4a2615",
+          surface: "#f1d19d",
+          glowA: "rgba(205, 124, 58, 0.16)",
+          glowB: "rgba(70, 142, 153, 0.12)",
+          settingsAlpha: 0.96,
+          controlAlpha: 0.9,
+          surfaceAlpha: 0.07,
+          blur: 0,
+          shellRadius: 7,
+          controlRadius: 7,
+          shadow: "0 28px 76px rgba(38, 14, 4, 0.66)",
+          defaultFontId: "editorial",
+          defaultAccent: "#5faaa6"
         }
       ];
+
+      const legacyThemeIds = {
+        "midnight-glass": "mac-native",
+        graphite: "darkroom-console",
+        ember: "country-roadhouse",
+        forest: "log-cabin"
+      };
 
       let state = loadState();
       let selectedSoundTarget = "focus";
@@ -1764,6 +2516,7 @@
         root.style.setProperty("--shell-radius", `${theme.shellRadius}px`);
         root.style.setProperty("--control-radius", `${theme.controlRadius}px`);
         root.style.setProperty("--shadow", theme.shadow);
+        root.style.setProperty("--surface-tone-brightness", (1 + tone / 200).toFixed(2));
         elements.surfaceToneValue.textContent = tone <= -12
           ? "Deep"
           : tone <= -4
@@ -2433,6 +3186,10 @@
         });
         elements.themeStyle.addEventListener("change", () => {
           state.selectedThemeId = elements.themeStyle.value;
+          const theme = themePresets.find((item) => item.id === state.selectedThemeId) || themePresets[0];
+          state.selectedFontStyle = theme.defaultFontId;
+          state.accentColor = theme.defaultAccent;
+          state.surfaceTone = 0;
           saveState();
           render();
         });
@@ -2542,6 +3299,7 @@
       state.breakMinutes = clampMinutes(state.breakMinutes, 5);
       state.tint = Math.min(82, Math.max(25, Number(state.tint) || 58));
       delete state.timerShade;
+      state.selectedThemeId = legacyThemeIds[state.selectedThemeId] || state.selectedThemeId;
       if (!themePresets.some((theme) => theme.id === state.selectedThemeId)) state.selectedThemeId = defaults.selectedThemeId;
       state.surfaceTone = Math.min(20, Math.max(-20, Number(state.surfaceTone) || 0));
       if (!fontStyles.some((style) => style.id === state.selectedFontStyle)) state.selectedFontStyle = "rounded";

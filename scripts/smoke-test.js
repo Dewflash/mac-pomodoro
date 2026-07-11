@@ -204,8 +204,8 @@ check("T1 cycle enabled by default", app.el("cycleToggle").classList.contains("o
 check("T1 two built-in sounds listed", app.el("focusSound").children.length, 2);
 check("T1 three built-in backgrounds listed", app.el("backgroundSelect").children.length, 3);
 check("T1 six font styles listed", app.el("fontStyle").children.length, 6);
-check("T1 four theme presets listed", app.el("themeStyle").children.length, 4);
-check("T1 midnight theme applied", app.documentElement.getAttribute("data-theme"), "midnight-glass");
+check("T1 nine theme presets listed", app.el("themeStyle").children.length, 9);
+check("T1 Mac Native theme applied", app.documentElement.getAttribute("data-theme"), "mac-native");
 check("T1 settings open on load", app.el("app").classList.contains("focus-mode"), false);
 check("T1 history log empty state", app.el("historyLog").children[0].textContent, "No completed sessions yet");
 
@@ -231,10 +231,12 @@ check(
 check("T3 hex input re-rendered uppercase", app.el("accentHex").value, "#33AAFF");
 
 // T3b — full theme preset + surface tone
-app.el("themeStyle").value = "graphite";
+app.el("themeStyle").value = "heritage-workshop";
 app.fire("themeStyle", "change");
-check("T3b theme persisted", app.savedState().selectedThemeId, "graphite");
-check("T3b graphite theme applied", app.documentElement.getAttribute("data-theme"), "graphite");
+check("T3b theme persisted", app.savedState().selectedThemeId, "heritage-workshop");
+check("T3b heritage theme applied", app.documentElement.getAttribute("data-theme"), "heritage-workshop");
+check("T3b theme selects its intended font", app.savedState().selectedFontStyle, "editorial");
+check("T3b theme selects its intended accent", app.savedState().accentColor, "#b08d57");
 app.el("surfaceTone").value = "15";
 app.fire("surfaceTone", "input");
 app.fire("surfaceTone", "change");
@@ -380,6 +382,13 @@ bridge.fire("pauseButton");
 const pauseMsg = bridge.nativeMessages.filter((m) => m.type === "timerState").pop();
 check("T14 pause pushes stopped timerState", pauseMsg ? pauseMsg.running : "(none)", false);
 check("T14 pause zeroes target", pauseMsg ? pauseMsg.targetEndTime : "(none)", 0);
+
+// ================================================================ instance 6
+// Legacy colour-only presets migrate to their closest full material theme.
+const storageF = new Map();
+storageF.set("macPomodoroState.v1", JSON.stringify({ selectedThemeId: "forest" }));
+const migrated = createInstance(storageF);
+check("T15 legacy forest theme migrates", migrated.documentElement.getAttribute("data-theme"), "log-cabin");
 
 // ---------------------------------------------------------------- summary
 if (failures > 0) {

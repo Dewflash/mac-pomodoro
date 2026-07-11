@@ -1,7 +1,7 @@
 # Pomodewro
 
 A local, offline Pomodoro focus timer that lives in the Mac menu bar. Click the tomato icon for a
-wide glassmorphism popover with the timer and settings; close it and keep working.
+wide themed popover with the timer and settings; close it and keep working.
 
 ## Install
 
@@ -15,8 +15,9 @@ unsigned indie build: on first launch macOS may require right-click → Open. Re
 - Default Web Audio chimes plus separate custom Focus and Break sounds; the native app copies
   imported sounds to local app storage so longer songs work (browser preview caps uploads at 2 MB)
 - Stop Alarm control for long completion sounds
-- Appearance tab: full material themes with surface-tone control, font presets, independent accent
-  colour, wallpaper-style backgrounds, unified backdrop contrast, and reset controls
+- Appearance tab: nine full interface themes — Mac Native, Field Notes, Winter Almanac, Heritage
+  Workshop, Darkroom Console, Log Cabin, Orchestra Studio, Pixel Grove, and Country Roadhouse —
+  with surface tone, font and accent customisation, wallpaper backgrounds, and backdrop contrast
 - History tab: seven-day focus chart, summary metrics, best-day and active-day insights, a recent
   session log, copy-as-JSON, and clear history
 - Toast feedback instead of native alerts
