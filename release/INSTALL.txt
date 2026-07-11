@@ -1,15 +1,15 @@
-Pomodewro 1.0 Install Notes
+Pomodewro 1.1 Install Notes
 
 This is an unsigned indie Mac build. The app works offline and does not need internet.
 
 DMG install:
-1. Open Pomodewro-1.0.dmg.
+1. Open Pomodewro-1.1.dmg.
 2. Drag Pomodewro.app to the Applications shortcut.
 3. Eject the Pomodewro disk image.
 4. Open Pomodewro from Applications.
 
 ZIP install:
-1. Unzip Pomodewro-1.0.zip.
+1. Unzip Pomodewro-1.1.zip.
 2. Drag Pomodewro.app to Applications.
 3. Open Pomodewro from Applications.
 
