@@ -243,6 +243,26 @@
       transform: translateX(18px);
     }
 
+    .app.focus-mode .main {
+      grid-template-rows: auto auto auto auto auto;
+      align-content: space-between;
+      gap: 0;
+    }
+
+    .app.focus-mode .mode-switch {
+      margin-top: 0;
+    }
+
+    .app.focus-mode .timer-zone {
+      align-self: auto;
+      transform: none;
+    }
+
+    .app.focus-mode .control-row {
+      margin-bottom: 0;
+      transform: none;
+    }
+
     .topbar {
       display: flex;
       align-items: center;
@@ -792,7 +812,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 84px;
+      height: 68px;
       color: rgba(255, 255, 255, 0.36);
       font-size: 8px;
       font-variant-numeric: tabular-nums;
@@ -808,7 +828,7 @@
 
     .history-bar-column {
       display: grid;
-      grid-template-rows: 84px 13px;
+      grid-template-rows: 68px 13px;
       gap: 4px;
       min-width: 0;
     }
@@ -882,6 +902,93 @@
       font-variant-numeric: tabular-nums;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .history-log-card {
+      min-height: 0;
+      padding: 8px 9px;
+      border-radius: 9px;
+      background: var(--surface-subtle);
+    }
+
+    .history-log-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .history-log-title,
+    .history-log-count {
+      margin: 0;
+      font-size: 9px;
+      font-weight: 720;
+    }
+
+    .history-log-title {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .history-log-count {
+      color: rgba(255, 255, 255, 0.42);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .history-log {
+      max-height: 52px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--accent-rgb), 0.34) transparent;
+    }
+
+    .history-log-item {
+      display: grid;
+      grid-template-columns: 5px minmax(0, 1fr) auto;
+      gap: 7px;
+      align-items: center;
+      min-height: 25px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .history-log-item:last-child {
+      border-bottom: 0;
+    }
+
+    .history-log-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.34);
+    }
+
+    .history-log-time,
+    .history-log-duration,
+    .history-log-empty {
+      margin: 0;
+      font-size: 8px;
+    }
+
+    .history-log-time {
+      min-width: 0;
+      overflow: hidden;
+      color: rgba(255, 255, 255, 0.68);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-log-duration {
+      color: rgba(255, 255, 255, 0.88);
+      font-weight: 720;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .history-log-empty {
+      padding: 7px 0 5px;
+      color: rgba(255, 255, 255, 0.42);
+      text-align: center;
     }
 
     .hidden-input {
@@ -1222,6 +1329,13 @@
                   <p class="history-insight-value" id="historyActiveDays">0 of 7</p>
                 </div>
               </div>
+              <div class="history-log-card">
+                <div class="history-log-heading">
+                  <p class="history-log-title">Recent sessions</p>
+                  <p class="history-log-count" id="historyLogCount">0 sessions</p>
+                </div>
+                <div class="history-log" id="historyLog" role="list" aria-label="Recent completed focus sessions"></div>
+              </div>
               <div class="action-row">
                 <button class="add-button" id="copyHistoryJson" type="button">Copy JSON</button>
                 <button class="add-button" id="clearHistory" type="button">Clear History</button>
@@ -1310,6 +1424,8 @@
         historyChart: document.getElementById("historyChart"),
         historyBestDay: document.getElementById("historyBestDay"),
         historyActiveDays: document.getElementById("historyActiveDays"),
+        historyLogCount: document.getElementById("historyLogCount"),
+        historyLog: document.getElementById("historyLog"),
         copyHistoryJson: document.getElementById("copyHistoryJson"),
         clearHistory: document.getElementById("clearHistory")
       };
@@ -2053,6 +2169,16 @@
         return `${(safeSeconds / 3600).toFixed(1)}h`;
       }
 
+      function formatHistoryLogTime(date) {
+        const todayKey = getLocalDateKey(new Date());
+        const dateKey = getLocalDateKey(date);
+        const dayLabel = dateKey === todayKey
+          ? "Today"
+          : date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+        const timeLabel = date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        return `${dayLabel} · ${timeLabel}`;
+      }
+
       function getWeeklyHistory() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -2147,6 +2273,52 @@
 
           column.append(track, label);
           elements.historyChart.appendChild(column);
+        }
+
+        const validSessions = state.history
+          .map((item) => ({
+            date: new Date(item.completedAt),
+            seconds: Math.max(0, Number(item.seconds) || 0)
+          }))
+          .filter((item) => !Number.isNaN(item.date.getTime()) && item.seconds > 0)
+          .sort((a, b) => b.date - a.date);
+        const recentSessions = validSessions.slice(0, 8);
+        elements.historyLogCount.textContent = validSessions.length > 8
+          ? `Latest 8 of ${validSessions.length}`
+          : `${validSessions.length} ${validSessions.length === 1 ? "session" : "sessions"}`;
+        elements.historyLog.innerHTML = "";
+
+        if (recentSessions.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "history-log-empty";
+          empty.textContent = "No completed sessions yet";
+          elements.historyLog.appendChild(empty);
+          return;
+        }
+
+        for (const session of recentSessions) {
+          const item = document.createElement("div");
+          item.className = "history-log-item";
+          item.setAttribute("role", "listitem");
+          item.setAttribute(
+            "aria-label",
+            `${formatHistoryLogTime(session.date)}, ${formatHistoryDuration(session.seconds)} focus session`
+          );
+
+          const dot = document.createElement("span");
+          dot.className = "history-log-dot";
+          dot.setAttribute("aria-hidden", "true");
+
+          const time = document.createElement("p");
+          time.className = "history-log-time";
+          time.textContent = formatHistoryLogTime(session.date);
+
+          const duration = document.createElement("p");
+          duration.className = "history-log-duration";
+          duration.textContent = formatHistoryDuration(session.seconds);
+
+          item.append(dot, time, duration);
+          elements.historyLog.appendChild(item);
         }
       }
 

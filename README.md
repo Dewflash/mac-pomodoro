@@ -17,8 +17,8 @@ unsigned indie build: on first launch macOS may require right-click → Open. Re
 - Stop Alarm control for long completion sounds
 - Appearance tab: full material themes with surface-tone control, font presets, independent accent
   colour, timer shade, wallpaper-style backgrounds, and reset controls
-- History tab: seven-day focus chart, summary metrics, best-day and active-day insights,
-  copy-as-JSON, and clear history
+- History tab: seven-day focus chart, summary metrics, best-day and active-day insights, a recent
+  session log, copy-as-JSON, and clear history
 - Toast feedback instead of native alerts
 
 ## Build from source

@@ -207,6 +207,7 @@ check("T1 six font styles listed", app.el("fontStyle").children.length, 6);
 check("T1 four theme presets listed", app.el("themeStyle").children.length, 4);
 check("T1 midnight theme applied", app.documentElement.getAttribute("data-theme"), "midnight-glass");
 check("T1 settings open on load", app.el("app").classList.contains("focus-mode"), false);
+check("T1 history log empty state", app.el("historyLog").children[0].textContent, "No completed sessions yet");
 
 // T2 — duration stepper + clamping
 app.fire("focusPlus");
@@ -265,6 +266,8 @@ check("T6 break duration displayed", app.el("timerDisplay").textContent, "05:00"
 check("T6 one focus session recorded", app.savedState().history.length, 1);
 check("T6 recorded full focus duration", app.savedState().history[0].seconds, 1500);
 check("T6 completion toast shown", app.toasts().includes("Focus complete"), true);
+check("T6 completion appears in log", app.el("historyLog").children.length, 1);
+check("T6 log shows session duration", app.el("historyLog").children[0].children[2].textContent, "25m");
 
 // T7 — break completes, cycles back to focus, breaks not recorded
 app.advance(301000);
@@ -361,6 +364,8 @@ check("T13 best day duration", weekly.el("historyBestDay").textContent.includes(
 check("T13 chart scale maximum", weekly.el("historyChartMax").textContent, "1.0h");
 check("T13 today is final chart bar", weekly.el("historyChart").children[6].className.includes("is-today"), true);
 check("T13 chart bar has accessible value", weekly.el("historyChart").children[6].getAttribute("aria-label").includes("1.0h focus across 1 session"), true);
+check("T13 log includes full stored history", weekly.el("historyLog").children.length, 2);
+check("T13 log count", weekly.el("historyLogCount").textContent, "2 sessions");
 
 // ================================================================ instance 5
 // Timer state is pushed to the native bridge (PLAN-menubar-countdown).
