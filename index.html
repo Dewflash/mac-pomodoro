@@ -1717,7 +1717,7 @@
     html:not([data-theme="mac-native"]) .app .main,
     html:not([data-theme="mac-native"]) .app.focus-mode .main {
       grid-template-rows: auto auto var(--material-timer-height) auto auto;
-      align-content: center;
+      align-content: space-between;
       gap: 9px;
     }
 
@@ -3346,26 +3346,18 @@
       }
 
       function restoreRunningTimer() {
-        targetEndTime = Number(state.targetEndTime) || 0;
-        if (!state.isRunning || targetEndTime <= 0) {
+        targetEndTime = 0;
+        if (state.isRunning) {
+          const savedRemaining = Number(state.remainingSeconds);
+          const duration = getModeDurationSeconds(state.mode);
+          remainingSeconds = Number.isFinite(savedRemaining) && savedRemaining > 0
+            ? Math.min(savedRemaining, duration)
+            : duration;
           state.isRunning = false;
-          targetEndTime = 0;
           state.settingsOpen = true;
-          remainingSeconds = Math.min(remainingSeconds, getModeDurationSeconds(state.mode));
-          return false;
+          saveState();
         }
-
-        remainingSeconds = Math.max(0, Math.ceil((targetEndTime - Date.now()) / 1000));
-        state.settingsOpen = false;
-        if (remainingSeconds <= 0) {
-          completeTimer();
-          return true;
-        }
-
-        timerId = window.setInterval(tick, 250);
-        saveState();
-        tick();
-        return true;
+        return false;
       }
 
       state.focusMinutes = clampMinutes(state.focusMinutes, 25);

@@ -335,10 +335,11 @@ storageB.set(
 );
 const restored = createInstance(storageB);
 check("T11 restored running display", restored.el("timerDisplay").textContent, "01:30");
-check("T11 restored hides settings", restored.el("app").classList.contains("focus-mode"), true);
+check("T11 launch does not start timer", restored.el("app").classList.contains("focus-mode"), false);
+check("T11 launch stores timer as paused", restored.savedState().isRunning, false);
 restored.advance(91000);
-check("T11 restored timer completes", restored.savedState().isRunning, false);
-check("T11 restored completion recorded", restored.savedState().history.length, 1);
+check("T11 paused timer stays paused", restored.savedState().isRunning, false);
+check("T11 paused timer does not record history", restored.savedState().history.length, 0);
 
 // ================================================================ instance 3
 // Expired running timer completes immediately on load.
@@ -357,9 +358,9 @@ storageC.set(
   })
 );
 const expired = createInstance(storageC);
-check("T12 expired timer completes on load", expired.savedState().isRunning, false);
-check("T12 expired session recorded", expired.savedState().history.length, 1);
-check("T12 display reset after expiry", expired.el("timerDisplay").textContent, "25:00");
+check("T12 expired timer does not auto-complete", expired.savedState().isRunning, false);
+check("T12 expired timer does not record history", expired.savedState().history.length, 0);
+check("T12 expired timer resets display", expired.el("timerDisplay").textContent, "25:00");
 
 // ================================================================ instance 4
 // Weekly aggregation excludes entries older than 7 days.
