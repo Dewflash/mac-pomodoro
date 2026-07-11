@@ -210,6 +210,21 @@ check("T1 background controls visible for Mac Native", app.el("backgroundSection
 check("T1 settings open on load", app.el("app").classList.contains("focus-mode"), false);
 check("T1 history log empty state", app.el("historyLog").children[0].textContent, "No completed sessions yet");
 
+// T1b — Mac Native backdrop contrast accepts the full 0–100 range.
+app.el("tintSlider").value = "0";
+app.fire("tintSlider", "input");
+app.fire("tintSlider", "change");
+check("T1b zero contrast persists", app.savedState().tint, 0);
+check("T1b zero contrast applies", app.el("shell").style.getPropertyValue("--tint"), "0.00");
+app.el("tintSlider").value = "100";
+app.fire("tintSlider", "input");
+app.fire("tintSlider", "change");
+check("T1b full contrast persists", app.savedState().tint, 100);
+check("T1b full contrast applies", app.el("shell").style.getPropertyValue("--tint"), "1.00");
+app.el("tintSlider").value = "58";
+app.fire("tintSlider", "input");
+app.fire("tintSlider", "change");
+
 // T2 — duration stepper + clamping
 app.fire("focusPlus");
 check("T2 stepper increments to 26:00", app.el("timerDisplay").textContent, "26:00");

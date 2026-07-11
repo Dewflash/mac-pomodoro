@@ -1469,6 +1469,7 @@
       color: #e65b50;
       font-family: "DIN Condensed", "SF Mono", Menlo, monospace;
       letter-spacing: 0.04em;
+      transform: translateY(10px);
       text-shadow: 0 0 12px rgba(230, 64, 54, 0.44), 0 0 28px rgba(144, 26, 20, 0.24);
     }
 
@@ -1944,7 +1945,7 @@
               </div>
               <div class="field">
                 <label for="tintSlider">Backdrop contrast <span id="tintValue">58%</span></label>
-                <input id="tintSlider" type="range" min="25" max="82" value="58">
+                <input id="tintSlider" type="range" min="0" max="100" value="58">
               </div>
               <p class="tip">Backdrop contrast handles image darkness and timer readability together.</p>
             </section>
@@ -3325,7 +3326,8 @@
 
       state.focusMinutes = clampMinutes(state.focusMinutes, 25);
       state.breakMinutes = clampMinutes(state.breakMinutes, 5);
-      state.tint = Math.min(82, Math.max(25, Number(state.tint) || 58));
+      const storedTint = Number(state.tint);
+      state.tint = Number.isFinite(storedTint) ? Math.min(100, Math.max(0, storedTint)) : 58;
       delete state.timerShade;
       state.selectedThemeId = legacyThemeIds[state.selectedThemeId] || state.selectedThemeId;
       if (!themePresets.some((theme) => theme.id === state.selectedThemeId)) state.selectedThemeId = defaults.selectedThemeId;
