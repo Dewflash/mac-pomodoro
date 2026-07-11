@@ -16,7 +16,7 @@ unsigned indie build: on first launch macOS may require right-click → Open. Re
   imported sounds to local app storage so longer songs work (browser preview caps uploads at 2 MB)
 - Stop Alarm control for long completion sounds
 - Appearance tab: full material themes with surface-tone control, font presets, independent accent
-  colour, timer shade, wallpaper-style backgrounds, and reset controls
+  colour, wallpaper-style backgrounds, unified backdrop contrast, and reset controls
 - History tab: seven-day focus chart, summary metrics, best-day and active-day insights, a recent
   session log, copy-as-JSON, and clear history
 - Toast feedback instead of native alerts
