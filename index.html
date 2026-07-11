@@ -1208,7 +1208,7 @@
       --material-border: rgba(255, 255, 255, 0.16);
       --material-main:
         radial-gradient(circle at 18% 18%, rgba(179, 139, 255, 0.12), transparent 30%),
-        linear-gradient(120deg, rgba(10, 18, 34, 0.82), rgba(7, 12, 23, 0.62));
+        linear-gradient(120deg, rgba(10, 18, 34, 0.46), rgba(7, 12, 23, 0.18));
       --material-settings: linear-gradient(150deg, rgba(60, 65, 78, 0.78), rgba(34, 38, 48, 0.82));
       --material-panel: rgba(255, 255, 255, 0.06);
       --material-panel-strong: rgba(13, 17, 27, 0.46);
@@ -1702,6 +1702,35 @@
       background-color: rgba(18, 42, 59, 0.74);
     }
 
+    html[data-theme="mac-native"] .section,
+    html[data-theme="field-notes"] .section,
+    html[data-theme="winter-almanac"] .section,
+    html[data-theme="heritage-workshop"] .section,
+    html[data-theme="log-cabin"] .section,
+    html[data-theme="orchestra-studio"] .section {
+      border-right: 0;
+      border-left: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    html[data-theme="mac-native"] .control-row,
+    html[data-theme="field-notes"] .control-row,
+    html[data-theme="winter-almanac"] .control-row,
+    html[data-theme="heritage-workshop"] .control-row,
+    html[data-theme="log-cabin"] .control-row,
+    html[data-theme="orchestra-studio"] .control-row {
+      padding: 0;
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .section[hidden] {
+      display: none;
+    }
+
     @keyframes toast-in {
       from {
         opacity: 0;
@@ -1879,7 +1908,7 @@
                 <label for="surfaceTone">Surface tone <span id="surfaceToneValue">Balanced</span></label>
                 <input id="surfaceTone" type="range" min="-20" max="20" value="0">
               </div>
-              <p class="tip">Themes rebuild the full material system. Font and accent remain customisable.</p>
+              <button class="add-button" id="resetBackground" type="button">Reset Appearance</button>
             </section>
 
             <section class="section">
@@ -1904,7 +1933,7 @@
               </div>
             </section>
 
-            <section class="section">
+            <section class="section" id="backgroundSection">
               <p class="section-title">Background</p>
               <div class="background-row">
                 <div class="field">
@@ -1917,7 +1946,6 @@
                 <label for="tintSlider">Backdrop contrast <span id="tintValue">58%</span></label>
                 <input id="tintSlider" type="range" min="25" max="82" value="58">
               </div>
-              <button class="add-button" id="resetBackground" type="button">Reset Appearance</button>
               <p class="tip">Backdrop contrast handles image darkness and timer readability together.</p>
             </section>
           </div>
@@ -2033,6 +2061,7 @@
         accentColor: document.getElementById("accentColor"),
         accentHex: document.getElementById("accentHex"),
         soundInput: document.getElementById("soundInput"),
+        backgroundSection: document.getElementById("backgroundSection"),
         backgroundSelect: document.getElementById("backgroundSelect"),
         uploadBackground: document.getElementById("uploadBackground"),
         resetBackground: document.getElementById("resetBackground"),
@@ -2089,9 +2118,7 @@
       ];
 
       const builtInBackgrounds = [
-        { id: "mountain-lake", name: "Mountain Lake", value: DEFAULT_BACKGROUND },
-        { id: "aurora", name: "Aurora", value: "linear-gradient(135deg, rgba(20,184,166,.72), rgba(30,64,175,.52) 43%, rgba(88,28,135,.62))" },
-        { id: "midnight", name: "Midnight", value: "linear-gradient(145deg, rgba(15,23,42,.94), rgba(14,116,144,.44) 48%, rgba(49,46,129,.68))" }
+        { id: "mountain-lake", name: "Mountain Lake", value: DEFAULT_BACKGROUND }
       ];
 
       const fontStyles = [
@@ -2441,6 +2468,7 @@
         elements.focusSound.value = state.selectedFocusSoundId;
         elements.breakSound.value = state.selectedBreakSoundId;
         elements.backgroundSelect.value = state.selectedBackgroundId;
+        elements.backgroundSection.hidden = state.selectedThemeId !== "mac-native";
         applyTheme();
         applyBackdropContrast();
         applyAccentColor();
@@ -3311,8 +3339,12 @@
       state.customBackgrounds = state.customBackgrounds.filter((background) => {
         return typeof background.data === "string" && background.data.length <= MAX_STORED_BACKGROUND_DATA_LENGTH;
       });
-      if (state.customBackgrounds.length !== backgroundCount && ![...builtInBackgrounds, ...state.customBackgrounds].some((background) => background.id === state.selectedBackgroundId)) {
+      const backgroundWasPruned = state.customBackgrounds.length !== backgroundCount;
+      const selectedBackgroundExists = [...builtInBackgrounds, ...state.customBackgrounds].some((background) => background.id === state.selectedBackgroundId);
+      if (!selectedBackgroundExists) {
         state.selectedBackgroundId = "mountain-lake";
+      }
+      if (backgroundWasPruned || !selectedBackgroundExists) {
         saveState();
       }
       state.history = Array.isArray(state.history) ? state.history : [];

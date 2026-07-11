@@ -202,10 +202,11 @@ check("T1 timer shows 25:00", app.el("timerDisplay").textContent, "25:00");
 check("T1 duration label 25:00", app.el("durationLabel").textContent, "25:00");
 check("T1 cycle enabled by default", app.el("cycleToggle").classList.contains("on"), true);
 check("T1 two built-in sounds listed", app.el("focusSound").children.length, 2);
-check("T1 three built-in backgrounds listed", app.el("backgroundSelect").children.length, 3);
+check("T1 Mountain Lake is the only built-in background", app.el("backgroundSelect").children.length, 1);
 check("T1 six font styles listed", app.el("fontStyle").children.length, 6);
 check("T1 nine theme presets listed", app.el("themeStyle").children.length, 9);
 check("T1 Mac Native theme applied", app.documentElement.getAttribute("data-theme"), "mac-native");
+check("T1 background controls visible for Mac Native", app.el("backgroundSection").hidden, false);
 check("T1 settings open on load", app.el("app").classList.contains("focus-mode"), false);
 check("T1 history log empty state", app.el("historyLog").children[0].textContent, "No completed sessions yet");
 
@@ -235,6 +236,7 @@ app.el("themeStyle").value = "heritage-workshop";
 app.fire("themeStyle", "change");
 check("T3b theme persisted", app.savedState().selectedThemeId, "heritage-workshop");
 check("T3b heritage theme applied", app.documentElement.getAttribute("data-theme"), "heritage-workshop");
+check("T3b background controls hidden for material theme", app.el("backgroundSection").hidden, true);
 check("T3b theme selects its intended font", app.savedState().selectedFontStyle, "editorial");
 check("T3b theme selects its intended accent", app.savedState().accentColor, "#b08d57");
 app.el("surfaceTone").value = "15";
@@ -389,6 +391,28 @@ const storageF = new Map();
 storageF.set("macPomodoroState.v1", JSON.stringify({ selectedThemeId: "forest" }));
 const migrated = createInstance(storageF);
 check("T15 legacy forest theme migrates", migrated.documentElement.getAttribute("data-theme"), "log-cabin");
+
+// ================================================================ instance 7
+// A persisted uploaded background remains selectable and is applied in Mac Native.
+const storageG = new Map();
+storageG.set(
+  "macPomodoroState.v1",
+  JSON.stringify({
+    selectedThemeId: "mac-native",
+    selectedBackgroundId: "background-sample",
+    customBackgrounds: [
+      { id: "background-sample", name: "Sample", data: "data:image/jpeg;base64,AA==" }
+    ]
+  })
+);
+const customBackground = createInstance(storageG);
+check("T16 uploaded background is listed", customBackground.el("backgroundSelect").children.length, 2);
+check("T16 uploaded background stays selected", customBackground.el("backgroundSelect").value, "background-sample");
+check(
+  "T16 uploaded background is applied",
+  customBackground.el("shell").style.getPropertyValue("--background-image"),
+  'url("data:image/jpeg;base64,AA==")'
+);
 
 // ---------------------------------------------------------------- summary
 if (failures > 0) {

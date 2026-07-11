@@ -17,7 +17,8 @@ unsigned indie build: on first launch macOS may require right-click → Open. Re
 - Stop Alarm control for long completion sounds
 - Appearance tab: nine full interface themes — Mac Native, Field Notes, Winter Almanac, Heritage
   Workshop, Darkroom Console, Log Cabin, Orchestra Studio, Pixel Grove, and Country Roadhouse —
-  with surface tone, font and accent customisation, wallpaper backgrounds, and backdrop contrast
+  with surface tone, font and accent customisation; Mac Native also supports uploaded wallpaper
+  backgrounds and backdrop contrast
 - History tab: seven-day focus chart, summary metrics, best-day and active-day insights, a recent
   session log, copy-as-JSON, and clear history
 - Toast feedback instead of native alerts
