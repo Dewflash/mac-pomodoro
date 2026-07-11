@@ -1747,7 +1747,11 @@
     }
 
     html:not([data-theme="mac-native"]) .control-item {
-      transform: translateY(1px);
+      transform: translateY(0);
+    }
+
+    html[data-theme="mac-native"] .control-item {
+      transform: translateY(-10px);
     }
 
     /* Settings visibility may change width, never the timer stack's vertical geometry. */
