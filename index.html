@@ -477,12 +477,6 @@
       box-shadow: 0 16px 38px rgba(var(--accent-rgb), 0.26);
     }
 
-    .control-label {
-      color: rgba(255, 255, 255, 0.78);
-      font-size: 12px;
-      font-weight: 620;
-    }
-
     .alarm-stop {
       display: inline-flex;
       align-items: center;
@@ -1164,7 +1158,6 @@
     }
 
     html[data-theme] .mode-pill,
-    html[data-theme] .control-label,
     html[data-theme] .progress-labels,
     html[data-theme] .tab,
     html[data-theme] .field label,
@@ -1698,6 +1691,11 @@
       background: repeating-linear-gradient(90deg, #2a2119 0 2px, #8a6b48 2px 17px);
     }
 
+    html[data-theme="country-roadhouse"] .progress-labels {
+      color: #1d1711;
+      text-shadow: none;
+    }
+
     html[data-theme="country-roadhouse"] .section {
       padding: 8px 8px 10px;
       border: 1px dashed rgba(219, 177, 109, 0.36);
@@ -1712,6 +1710,10 @@
       box-shadow: none;
     }
 
+    html[data-theme="mac-native"] .progress-wrap {
+      transform: translateY(5px);
+    }
+
     html:not([data-theme="mac-native"]) .app .main,
     html:not([data-theme="mac-native"]) .app.focus-mode .main {
       grid-template-rows: auto auto var(--material-timer-height) auto auto;
@@ -1724,10 +1726,11 @@
       height: var(--material-timer-height);
       align-self: center;
       justify-self: center;
+      transition: width 260ms ease;
     }
 
     html:not([data-theme="mac-native"]) .app.focus-mode .timer-zone {
-      width: calc(100% - var(--settings-panel-width));
+      width: 100%;
     }
 
     html:not([data-theme="mac-native"]) .app .control-row,
@@ -1736,10 +1739,11 @@
       margin: 0;
       transform: none;
       justify-self: center;
+      transition: width 260ms ease;
     }
 
     html:not([data-theme="mac-native"]) .app.focus-mode .control-row {
-      width: calc(100% - var(--settings-panel-width));
+      width: 100%;
     }
 
     html:not([data-theme="mac-native"]) .control-item {
@@ -1841,7 +1845,7 @@
           <div class="progress-wrap">
             <div class="progress-track"><div class="progress-fill"></div></div>
             <div class="progress-labels">
-              <span>0:00</span>
+              <span>00:00</span>
               <span id="durationLabel">25:00</span>
             </div>
           </div>
@@ -1850,15 +1854,12 @@
         <div class="control-row">
           <button class="control-item primary" id="playButton" type="button" aria-label="Play" title="Play">
             <span class="icon-round"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.8v12.4c0 .8.9 1.3 1.6.9l9.4-6.2c.6-.4.6-1.3 0-1.8L9.6 4.9C8.9 4.5 8 5 8 5.8Z"/></svg></span>
-            <span class="control-label">Play</span>
           </button>
           <button class="control-item" id="pauseButton" type="button" aria-label="Pause" title="Pause">
             <span class="icon-round"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7V5Zm6.5 0H17v14h-3.5V5Z"/></svg></span>
-            <span class="control-label">Pause</span>
           </button>
           <button class="control-item" id="resetButton" type="button" aria-label="Reset" title="Reset">
             <span class="icon-round"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8.5A8 8 0 1 1 4.9 16M5 8.5V4m0 4.5h4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="control-label">Reset</span>
           </button>
         </div>
 
