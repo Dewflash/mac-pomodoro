@@ -1198,6 +1198,12 @@
         } catch {
           showToast("Could not save settings");
         }
+        postNativeMessage({
+          type: "timerState",
+          running: isRunning,
+          mode: state.mode,
+          targetEndTime: isRunning ? targetEndTime : 0
+        });
       }
 
       function nativeBridgeAvailable() {

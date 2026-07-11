@@ -343,6 +343,20 @@ check("T13 old sessions excluded from week hours", weekly.el("weekHours").textCo
 check("T13 old sessions excluded from week count", weekly.el("weekSessions").textContent, "1");
 check("T13 seven day rows rendered", weekly.el("historyList").children.length, 7);
 
+// ================================================================ instance 5
+// Timer state is pushed to the native bridge (PLAN-menubar-countdown).
+const storageE = new Map();
+const bridge = createInstance(storageE);
+bridge.fire("playButton");
+const startMsg = bridge.nativeMessages.filter((m) => m.type === "timerState").pop();
+check("T14 start pushes running timerState", Boolean(startMsg && startMsg.running), true);
+check("T14 start pushes focus mode", startMsg ? startMsg.mode : "(none)", "focus");
+check("T14 start pushes future target", Boolean(startMsg && startMsg.targetEndTime > fakeNowMs), true);
+bridge.fire("pauseButton");
+const pauseMsg = bridge.nativeMessages.filter((m) => m.type === "timerState").pop();
+check("T14 pause pushes stopped timerState", pauseMsg ? pauseMsg.running : "(none)", false);
+check("T14 pause zeroes target", pauseMsg ? pauseMsg.targetEndTime : "(none)", 0);
+
 // ---------------------------------------------------------------- summary
 if (failures > 0) {
   console.error(`SMOKE FAIL: ${failures}/${checks} checks failed`);

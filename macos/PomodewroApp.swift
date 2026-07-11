@@ -16,14 +16,21 @@ private enum AppConfig {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+    private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let popover = NSPopover()
     private let webViewController = WebViewController()
+    private var countdownTimer: Timer?
+    private var activityToken: NSObjectProtocol?
+    private var timerState: TimerState?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         configureStatusItem()
         configurePopover()
+        webViewController.onTimerStateChange = { [weak self] state in
+            self?.applyTimerState(state)
+        }
+        webViewController.loadIfNeeded()
     }
 
     private func configureStatusItem() {
@@ -70,15 +77,85 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func quit() {
         NSApp.terminate(nil)
     }
+
+    private func applyTimerState(_ state: TimerState) {
+        if state == timerState { return }
+        timerState = state
+        if state.running {
+            beginKeepAlive()
+            startCountdownDisplay()
+        } else {
+            stopCountdownDisplay()
+            endKeepAlive()
+        }
+    }
+
+    private func startCountdownDisplay() {
+        countdownTimer?.invalidate()
+        let timer = Timer(timeInterval: 0.5, repeats: true) { [weak self] _ in
+            self?.updateStatusTitle()
+        }
+        timer.tolerance = 0.1
+        RunLoop.main.add(timer, forMode: .common)
+        countdownTimer = timer
+        updateStatusTitle()
+    }
+
+    private func stopCountdownDisplay() {
+        countdownTimer?.invalidate()
+        countdownTimer = nil
+        updateStatusButton(title: "")
+    }
+
+    private func updateStatusTitle() {
+        guard let state = timerState, state.running else { return }
+        let remaining = max(0, Int(ceil(state.targetEndTimeMs / 1000 - Date().timeIntervalSince1970)))
+        updateStatusButton(title: Self.formatRemaining(remaining))
+        if remaining <= 0 {
+            webViewController.refreshTimer()
+        }
+    }
+
+    private func updateStatusButton(title: String) {
+        guard let button = statusItem.button else { return }
+        if title.isEmpty {
+            button.attributedTitle = NSAttributedString(string: "")
+            button.imagePosition = .imageOnly
+        } else {
+            let font = NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .medium)
+            button.attributedTitle = NSAttributedString(string: title, attributes: [.font: font])
+            button.imagePosition = .imageLeft
+        }
+    }
+
+    private static func formatRemaining(_ totalSeconds: Int) -> String {
+        String(format: "%02d:%02d", totalSeconds / 60, totalSeconds % 60)
+    }
+
+    private func beginKeepAlive() {
+        guard activityToken == nil else { return }
+        activityToken = ProcessInfo.processInfo.beginActivity(
+            options: [.userInitiatedAllowingIdleSystemSleep],
+            reason: "Pomodewro timer running"
+        )
+    }
+
+    private func endKeepAlive() {
+        guard let token = activityToken else { return }
+        ProcessInfo.processInfo.endActivity(token)
+        activityToken = nil
+    }
 }
 
 final class WebViewController: NSViewController, WKUIDelegate, WKScriptMessageHandler {
+    fileprivate var onTimerStateChange: ((TimerState) -> Void)?
     private var didLoad = false
     private let soundStore = SoundStore()
     private lazy var soundSchemeHandler = SoundSchemeHandler(store: soundStore)
     private lazy var webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()
+        configuration.mediaTypesRequiringUserActionForPlayback = []
         configuration.setURLSchemeHandler(soundSchemeHandler, forURLScheme: "pomodewro-sound")
         configuration.userContentController.add(self, name: "pomodewroNative")
 
@@ -144,6 +221,11 @@ final class WebViewController: NSViewController, WKUIDelegate, WKScriptMessageHa
             importSound()
         case "clearSounds":
             clearStoredSounds()
+        case "timerState":
+            let running = body["running"] as? Bool ?? false
+            let mode = body["mode"] as? String ?? "focus"
+            let targetEndTimeMs = body["targetEndTime"] as? Double ?? 0
+            onTimerStateChange?(TimerState(running: running, mode: mode, targetEndTimeMs: targetEndTimeMs))
         default:
             break
         }
@@ -207,6 +289,12 @@ final class WebViewController: NSViewController, WKUIDelegate, WKScriptMessageHa
 
         webView.evaluateJavaScript("window['\(name)'] && window['\(name)'](\(json));")
     }
+}
+
+private struct TimerState: Equatable {
+    let running: Bool
+    let mode: String
+    let targetEndTimeMs: Double
 }
 
 private struct NativeSound {

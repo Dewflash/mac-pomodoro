@@ -47,6 +47,13 @@ The real menu-bar behaviors and audible chimes in checks A–F remain unverified
 be committed until those checks can be performed on a GUI session with screen-recording and
 Accessibility access, plus audible output available to the operator.
 
+### User override
+
+On 2026-07-11, the user explicitly waived the manual-test hold and requested that the countdown
+feature be reapplied to the local build. The feature is now present in source and
+`build/Pomodewro.app`; its mechanical gate passes with `SMOKE PASS (56 checks)` and `VERIFY PASS`.
+The manual A–F observations above were not performed by Codex.
+
 ## PLAN-final-polish — release QA verdict DO-NOT-SHIP
 
 The packaged `release/Pomodewro-1.1.dmg` was installed to a scratch directory and its app process
