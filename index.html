@@ -8,6 +8,8 @@
     :root {
       color-scheme: dark;
       --native-popover-scale: 1;
+      --settings-panel-width: 292px;
+      --material-timer-height: 190px;
       --accent: #4ee8dc;
       --accent-rgb: 78, 232, 220;
       --accent-strong: #20c7bd;
@@ -208,7 +210,7 @@
     .tint {
       position: absolute;
       top: 0;
-      right: 292px;
+      right: var(--settings-panel-width);
       bottom: 0;
       left: 0;
       z-index: -1;
@@ -222,7 +224,7 @@
 
     .app {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 292px;
+      grid-template-columns: minmax(0, 1fr) var(--settings-panel-width);
       height: 100%;
       transition: grid-template-columns 260ms ease;
     }
@@ -1701,6 +1703,47 @@
       border: 1px dashed rgba(219, 177, 109, 0.36);
       border-radius: 8px;
       background-color: rgba(18, 42, 59, 0.74);
+    }
+
+    html[data-theme="mac-native"] .timer-zone {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    html:not([data-theme="mac-native"]) .app .main,
+    html:not([data-theme="mac-native"]) .app.focus-mode .main {
+      grid-template-rows: auto auto var(--material-timer-height) auto auto;
+      align-content: center;
+      gap: 9px;
+    }
+
+    html:not([data-theme="mac-native"]) .app .timer-zone {
+      width: 100%;
+      height: var(--material-timer-height);
+      align-self: center;
+      justify-self: center;
+    }
+
+    html:not([data-theme="mac-native"]) .app.focus-mode .timer-zone {
+      width: calc(100% - var(--settings-panel-width));
+    }
+
+    html:not([data-theme="mac-native"]) .app .control-row,
+    html:not([data-theme="mac-native"]) .app.focus-mode .control-row {
+      width: 100%;
+      margin: 0;
+      transform: none;
+      justify-self: center;
+    }
+
+    html:not([data-theme="mac-native"]) .app.focus-mode .control-row {
+      width: calc(100% - var(--settings-panel-width));
+    }
+
+    html:not([data-theme="mac-native"]) .control-item {
+      transform: translateY(8px);
     }
 
     html[data-theme="mac-native"] .section,
